@@ -1,4 +1,5 @@
-﻿using MusicAlbumsShop.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using System.Reflection.Metadata.Ecma335;
 using static MusicAlbumsShop.DTOs.AlbumWithTitle;
@@ -14,9 +15,9 @@ namespace MusicAlbumsShop.Storage
 
     public class AlbumStorage : IAlbumStorage
     {
-        private readonly BandsContext _context;
+        private readonly MusicAlbumsContext _context;
 
-        public AlbumStorage(BandsContext context)
+        public AlbumStorage(MusicAlbumsContext context)
         {
             _context = context;
         }
@@ -36,6 +37,10 @@ namespace MusicAlbumsShop.Storage
             found.Title = title;
             found.ReleaseDate = releaseDate;
             found.BandId = bandId;
+
+            _context.Albums.Add(found);
+
+            _context.SaveChanges();
 
             return found;
         }

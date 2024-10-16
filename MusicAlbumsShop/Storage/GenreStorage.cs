@@ -13,16 +13,18 @@ namespace MusicAlbumsShop.Storage
 
     public class GenreStorage : IGenreStorage // manipular dados
     {
-        private readonly BandsContext _context;
+        private readonly MusicAlbumsContext _context;
 
-        public GenreStorage(BandsContext context)
+        public GenreStorage(MusicAlbumsContext context)
         {
             _context = context;
         }
 
         public Genre AddGenre(string name)
         {
-            var found = _context.Genres.Find(name);
+            //var found = _context.Genres.Find(name); -> Dando exception
+            var found = _context.Genres.Where(g => g.Name == name).FirstOrDefault();
+
 
             if (found != null)
             {
@@ -31,6 +33,8 @@ namespace MusicAlbumsShop.Storage
 
             var genre = new Genre() { Name = name};
             _context.Genres.Add(genre);
+            _context.SaveChanges();
+
             return genre;
 
         }

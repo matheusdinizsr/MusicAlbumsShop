@@ -13,7 +13,7 @@ namespace Tests
     internal class AlbumServiceTests
     {
         private AlbumService _albumService;
-        private BandsContext _context;
+        private MusicAlbumsContext _context;
         private Mock<IAlbumStorage> _albumStorageMock;
 
         [SetUp]

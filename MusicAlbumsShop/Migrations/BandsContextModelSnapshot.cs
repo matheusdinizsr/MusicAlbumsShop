@@ -10,7 +10,7 @@ using MusicAlbumsShop.Storage;
 
 namespace MusicAlbumsShop.Migrations
 {
-    [DbContext(typeof(BandsContext))]
+    [DbContext(typeof(MusicAlbumsContext))]
     partial class BandsContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

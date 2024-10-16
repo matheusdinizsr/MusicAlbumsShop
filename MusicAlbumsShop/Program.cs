@@ -20,9 +20,9 @@ namespace MusicAlbumsShop
             builder.Services.AddScoped<IBandService, BandService>();
             builder.Services.AddScoped<IAlbumService, AlbumService>();
             builder.Services.AddScoped<IAlbumStorage, AlbumStorage>();
-            builder.Services.AddScoped<BandsContext, BandsContext>();
+            builder.Services.AddScoped<MusicAlbumsContext, MusicAlbumsContext>();
 
-            builder.Services.AddDbContext<BandsContext>(options =>
+            builder.Services.AddDbContext<MusicAlbumsContext>(options =>
                 options.UseSqlServer("Data Source=Math;Initial Catalog=musicalbumsshop;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False"));
 
             var app = builder.Build();

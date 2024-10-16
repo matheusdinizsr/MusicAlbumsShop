@@ -11,7 +11,7 @@ namespace Tests
     internal class BandStorageTests
     {
         private BandStorage _storage;
-        private BandsContext _context;
+        private MusicAlbumsContext _context;
 
         [SetUp]
         public void Setup()

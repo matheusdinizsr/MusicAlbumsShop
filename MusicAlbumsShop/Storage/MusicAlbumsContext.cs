@@ -3,13 +3,13 @@ using MusicAlbumsShop.Models;
 
 namespace MusicAlbumsShop.Storage
 {
-    public class BandsContext : DbContext
+    public class MusicAlbumsContext : DbContext
     {
         public DbSet<Band> Bands { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Album> Albums { get; set; }
 
-        public BandsContext(DbContextOptions<BandsContext> dbContextOptions) : base(dbContextOptions)
+        public MusicAlbumsContext(DbContextOptions<MusicAlbumsContext> dbContextOptions) : base(dbContextOptions)
         {
             
         }
@@ -18,6 +18,7 @@ namespace MusicAlbumsShop.Storage
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Genre>().Property(x => x.Id).IsRequired();
             modelBuilder.Entity<Genre>().Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(64);

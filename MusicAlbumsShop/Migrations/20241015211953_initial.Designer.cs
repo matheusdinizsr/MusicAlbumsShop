@@ -11,7 +11,7 @@ using MusicAlbumsShop.Storage;
 
 namespace MusicAlbumsShop.Migrations
 {
-    [DbContext(typeof(BandsContext))]
+    [DbContext(typeof(MusicAlbumsContext))]
     [Migration("20241015211953_initial")]
     partial class initial
     {

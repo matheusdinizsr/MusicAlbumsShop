@@ -11,9 +11,9 @@ namespace MusicAlbumsShop.Storage
     }
     public class BandStorage : IBandStorage
     {
-        private readonly BandsContext _context;
+        private readonly MusicAlbumsContext _context;
 
-        public BandStorage(BandsContext context)
+        public BandStorage(MusicAlbumsContext context)
         {
             _context = context;
         }
@@ -23,13 +23,17 @@ namespace MusicAlbumsShop.Storage
             {
                 return null;
             }
-            
-            var found = _context.Bands.Find(name) ?? new Band();
+
+            //var found = _context.Bands.Find(name) ?? new Band();
+            var found = _context.Bands.Where(b => b.Name == name).FirstOrDefault() ?? new Band();
 
             found.Name = name;
             found.Origin = origin;
             found.YearsActive = yearsActive;
             found.GenreId = genreId;
+
+            _context.Bands.Add(found);
+            _context.SaveChanges();
 
             return found;
         }

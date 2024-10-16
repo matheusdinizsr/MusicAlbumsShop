@@ -9,7 +9,7 @@ namespace Tests
     public class GenreStorageTests
     {
         private GenreStorage _storage;
-        private BandsContext _context;
+        private MusicAlbumsContext _context;
 
         [SetUp]
         public void Setup()
