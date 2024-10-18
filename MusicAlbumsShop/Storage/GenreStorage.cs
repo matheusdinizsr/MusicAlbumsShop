@@ -23,6 +23,7 @@ namespace MusicAlbumsShop.Storage
         public Genre AddGenre(string name)
         {
             //var found = _context.Genres.Find(name); -> Dando exception
+
             var found = _context.Genres.Where(g => g.Name == name).FirstOrDefault();
 
 
@@ -30,12 +31,15 @@ namespace MusicAlbumsShop.Storage
             {
                 return found;
             }
+            else
+            {
+                var genre = new Genre() { Name = name };
+                _context.Genres.Add(genre);
+                _context.SaveChanges();
+                return genre;
+            }
 
-            var genre = new Genre() { Name = name};
-            _context.Genres.Add(genre);
-            _context.SaveChanges();
 
-            return genre;
 
         }
 

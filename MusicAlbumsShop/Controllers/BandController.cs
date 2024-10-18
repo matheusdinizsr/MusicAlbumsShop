@@ -32,8 +32,9 @@ namespace MusicAlbumsShop.Controllers
             }
 
             var band = _bandService.AddOrUpdateBand(name, origin, yearsActive, genreId);
+            var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
 
-            return Ok(band);
+            return Ok(bandDto);
         }
 
         [HttpGet("bands")]

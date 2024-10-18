@@ -18,7 +18,7 @@ namespace MusicAlbumsShop.Storage
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Genre>().Property(x => x.Id).IsRequired();
+            //modelBuilder.Entity<Genre>().Property(x => x.Id).IsRequired();
             modelBuilder.Entity<Genre>().Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(64);

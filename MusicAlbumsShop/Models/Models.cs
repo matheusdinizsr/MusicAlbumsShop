@@ -1,7 +1,10 @@
-﻿namespace MusicAlbumsShop.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MusicAlbumsShop.Models
 {
     public class EntityBase
     {
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public int Id { get; set; }
     }
     public class Band : EntityBase
