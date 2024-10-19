@@ -33,4 +33,9 @@
         public DateTime ReleaseDate { get; set; }
         public string BandName { get; set; }
     }
+
+    public class GenreWithTitle
+    {
+        public int GenreId { get; set; }
+        public string Name { get; set; }
 }

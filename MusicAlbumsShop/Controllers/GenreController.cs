@@ -32,7 +32,9 @@ namespace MusicAlbumsShop.Controllers
         {
             var genre = _genreStorage.AddGenre(name);
 
-            return genre;
+            var genreDto = new GenreWithTitle() { GenreId = genre.Id, Name = genre.Name };
+
+            return genreDto;
         }
     }
 }
