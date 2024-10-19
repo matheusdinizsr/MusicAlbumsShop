@@ -32,17 +32,38 @@ namespace MusicAlbumsShop.Storage
             var found = _context.Albums
                 .Where(a => a.BandId == bandId)
                 .Where(a => a.Title == title)
-                .FirstOrDefault() ?? new Album();
+                .FirstOrDefault();
 
-            found.Title = title;
-            found.ReleaseDate = releaseDate;
-            found.BandId = bandId;
+            if (found != null)
+            {
+                found.Title = title;
+                found.ReleaseDate = releaseDate;
+                found.BandId = bandId;
+                _context.SaveChanges();
+                return found;
+            }
+            else
+            {
+                var album = new Album();
+                album.Title = title;
+                album.ReleaseDate = releaseDate;
+                album.BandId = bandId;
+                _context.Albums.Add(album);
+                _context.SaveChanges();
+                return album;
+            }
 
-            _context.Albums.Add(found);
+            //?? new Album();
 
-            _context.SaveChanges();
+            //found.Title = title;
+            //found.ReleaseDate = releaseDate;
+            //found.BandId = bandId;
 
-            return found;
+            //_context.Albums.Add(found);
+
+            //_context.SaveChanges();
+
+            //return found;
         }
 
         public Album? GetAlbumById(int albumId)

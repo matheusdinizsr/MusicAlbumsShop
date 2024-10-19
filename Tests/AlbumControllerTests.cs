@@ -45,7 +45,7 @@ namespace Tests
             //_albumStorageMock.Setup(x => x.AddOrUpdateAlbum(title, releaseDate, bandId)).Returns(album).Verifiable();
 
             // act
-            var result = _albumController.AddAlbum(title, releaseDate, bandId);
+            var result = _albumController.AddOrUpdateAlbum(title, releaseDate, bandId);
 
             // assert
             Assert.That(result, Is.Not.Null);

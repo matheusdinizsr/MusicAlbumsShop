@@ -26,7 +26,6 @@ namespace MusicAlbumsShop.Storage
 
             var found = _context.Genres.Where(g => g.Name == name).FirstOrDefault();
 
-
             if (found != null)
             {
                 return found;
@@ -38,8 +37,6 @@ namespace MusicAlbumsShop.Storage
                 _context.SaveChanges();
                 return genre;
             }
-
-
 
         }
 

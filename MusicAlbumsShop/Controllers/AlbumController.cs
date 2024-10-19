@@ -25,17 +25,19 @@ namespace MusicAlbumsShop.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddAlbum(string title, DateTime releaseDate, int bandId)
+        public IActionResult AddOrUpdateAlbum(string title, DateTime releaseDate, int bandId)
         {
 
-            if (_bandStorage.GetBandById(bandId) == null)
+            if (_bandStorage.GetBandById(bandId) == null) // O retorno nulo da banda está sendo checado aqui e no AlbumStorage
             {
                 return BadRequest("Band does not exist");
             }
 
             var album = _albumService.AddOrUpdateAlbum(title, releaseDate, bandId);
 
-            return Ok(album);
+            var albumDto = new AlbumWithTitle() { AlbumId = album.Id, BandName = album.Band.Name, Title = title };
+
+            return Ok(albumDto);
         }
 
         [HttpGet]
