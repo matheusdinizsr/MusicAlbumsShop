@@ -22,8 +22,6 @@ namespace MusicAlbumsShop.Storage
 
         public Genre AddGenre(string name)
         {
-            //var found = _context.Genres.Find(name); -> Dando exception
-
             var found = _context.Genres.Where(g => g.Name == name).FirstOrDefault();
 
             if (found != null)

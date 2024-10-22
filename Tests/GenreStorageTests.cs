@@ -20,8 +20,8 @@ namespace Tests
             builder.UseSqlServer("Data Source=Math;Initial Catalog=testmusicalbumsshop;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
             _dbContextOptions = builder.Options;
             _context = new MusicAlbumsContext(_dbContextOptions);
-            _context.Database.EnsureCreated();
             _storage = new GenreStorage(_context);
+            _context.Database.EnsureCreated();
         }
 
         [Test]
@@ -36,7 +36,8 @@ namespace Tests
             Assert.That(genre, Is.Not.Null);
             Assert.That(genre.Id, Is.EqualTo(1));
             Assert.That(genre.Name, Is.EqualTo("Blues"));
-            var fetched = _context.Genres.FirstOrDefault(g => g.Name == genre.Name);
+            var contextCopy = _context;
+            var fetched = contextCopy.Genres.FirstOrDefault(g => g.Name == genre.Name);
             Assert.That(genre, Is.EqualTo(fetched));
 
         }
@@ -52,7 +53,8 @@ namespace Tests
             var genre = _storage.AddGenre("Rock");
 
             //assert
-            var fetched = _context.Genres.FirstOrDefault(g => g.Name == "Rock");
+            var contextCopy = _context;
+            var fetched = contextCopy.Genres.FirstOrDefault(g => g.Name == "Rock");
             Assert.That(genre, Is.EqualTo(fetched));
             Assert.That(_context.Genres.Count, Is.EqualTo(counter));
         }
@@ -93,6 +95,7 @@ namespace Tests
         {
             if (_context != null)
             {
+                _context.Database.EnsureDeleted();
                 _context.Dispose();
             }
         }
