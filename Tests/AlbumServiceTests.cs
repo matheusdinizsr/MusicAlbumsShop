@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Moq;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Services;
 using MusicAlbumsShop.Storage;
@@ -14,12 +16,14 @@ namespace Tests
     {
         private AlbumService _albumService;
         private MusicAlbumsContext _context;
+        private DbContextOptions<MusicAlbumsContext> _dbContextOptions;
         private Mock<IAlbumStorage> _albumStorageMock;
 
         [SetUp]
         public void Setup()
         {
-            _context = new BandsContext();
+            _dbContextOptions = new DbContextOptions<MusicAlbumsContext>();
+            _context = new MusicAlbumsContext(_dbContextOptions);
             _albumStorageMock = new Mock<IAlbumStorage>(MockBehavior.Strict);
             _albumService = new AlbumService(_albumStorageMock.Object);
         }
@@ -43,6 +47,15 @@ namespace Tests
             // assert
             Assert.That(result, Is.EqualTo(album));
 
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_context != null)
+            {
+                _context.Dispose();
+            }
         }
     }
 }

@@ -24,43 +24,21 @@ namespace MusicAlbumsShop.Storage
                 return null;
             }
 
-            var found = _context.Bands.Where(b => b.Name == name).FirstOrDefault();
+            var band = _context.Bands.FirstOrDefault(b => b.Name == name) ?? new Band();
 
-            if (found != null)
+            if (band.Id == 0)
             {
-                found.Name = name;
-                found.Origin = origin;
-                found.YearsActive = yearsActive;
-                found.GenreId = genreId;
-                _context.SaveChanges();
-                return found;
-            }
-            else
-            {
-                var band = new Band();
-                band.Name = name;
-                band.Origin = origin;
-                band.YearsActive = yearsActive;
-                band.GenreId = genreId;
-
                 _context.Bands.Add(band);
-                _context.SaveChanges();
-                return band;
             }
 
+            band.Name = name;
+            band.Origin = origin;
+            band.YearsActive = yearsActive;
+            band.GenreId = genreId;
 
-            //var found = _context.Bands.Find(name) ?? new Band();
-            //var found = _context.Bands.Where(b => b.Name == name).FirstOrDefault() ?? new Band();
+            _context.SaveChanges();
+            return band;
 
-            //found.Name = name;
-            //found.Origin = origin;
-            //found.YearsActive = yearsActive;
-            //found.GenreId = genreId;
-
-            //_context.Bands.Add(found);
-            //_context.SaveChanges();
-
-            //return found;
         }
 
         public BandWithName[] GetBands()

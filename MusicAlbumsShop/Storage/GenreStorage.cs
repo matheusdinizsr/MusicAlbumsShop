@@ -51,7 +51,7 @@ namespace MusicAlbumsShop.Storage
             return _context.Genres.Where(g => g.Name == name).FirstOrDefault();
         }
 
-        public Genre? GetGenreById(int genreId) // novo
+        public Genre? GetGenreById(int genreId)
         {
             return _context.Genres.Where(g => g.Id == genreId).FirstOrDefault();
         }

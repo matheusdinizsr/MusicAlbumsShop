@@ -28,12 +28,12 @@ namespace MusicAlbumsShop.Controllers
         public IActionResult AddOrUpdateAlbum(string title, DateTime releaseDate, int bandId)
         {
 
-            if (_bandStorage.GetBandById(bandId) == null) // O retorno nulo da banda está sendo checado aqui e no AlbumStorage
+            var album = _albumService.AddOrUpdateAlbum(title, releaseDate, bandId);
+
+            if (album == null)
             {
                 return BadRequest("Band does not exist");
             }
-
-            var album = _albumService.AddOrUpdateAlbum(title, releaseDate, bandId);
 
             var albumDto = new AlbumWithTitle() { AlbumId = album.Id, BandName = album.Band.Name, Title = title };
 
@@ -64,14 +64,11 @@ namespace MusicAlbumsShop.Controllers
                 return NotFound("Album not found");
             }
 
-            var band = _bandStorage.GetBandById(album.BandId); // Encontra o album, mas não a banda?
-
-
             var albumDto = new AlbumDetails
             {
                 Title = album.Title,
                 ReleaseDate = album.ReleaseDate,
-                BandName = band.Name
+                BandName = album.Band.Name
             };
 
             return Ok(albumDto);

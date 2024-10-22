@@ -28,13 +28,13 @@ namespace MusicAlbumsShop.Controllers
         }
 
         [HttpPost]
-        public Genre AddOrGetGenre(string name)
+        public IActionResult AddOrGetGenre(string name)
         {
             var genre = _genreStorage.AddGenre(name);
 
             var genreDto = new GenreWithTitle() { GenreId = genre.Id, Name = genre.Name };
 
-            return genreDto;
+            return Ok(genreDto);
         }
     }
 }

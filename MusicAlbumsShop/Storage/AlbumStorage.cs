@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using System.Reflection.Metadata.Ecma335;
@@ -68,7 +69,7 @@ namespace MusicAlbumsShop.Storage
 
         public Album? GetAlbumById(int albumId)
         {
-            var found = _context.Albums.Find(albumId);
+            var found = _context.Albums.Include(a => a.Band).FirstOrDefault(a => a.Id == albumId);
 
             return found;
         }
