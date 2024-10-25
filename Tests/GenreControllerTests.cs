@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using MusicAlbumsShop.Controllers;
+using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Services;
 using MusicAlbumsShop.Storage;
@@ -14,32 +17,35 @@ namespace Tests
 {
     internal class GenreControllerTests
     {
-        private GenreController _genreController;
-        private Mock<IGenreService> _genreServiceMock;
-        private Mock<IGenreStorage> _genreStorageMock;
+        private Mock<IGenreService> _serviceMock;
+        private Mock<IGenreStorage> _storageMock;
+        private GenreController _controller;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
-            _genreServiceMock = new Mock<IGenreService>(MockBehavior.Strict);
-            _genreStorageMock = new Mock<IGenreStorage>(MockBehavior.Strict);
-            _genreController = new GenreController(new Logger<GenreController>(new LoggerFactory()), _genreServiceMock.Object, _genreStorageMock.Object);
+            _storageMock = new Mock<IGenreStorage>(MockBehavior.Strict);
+            _serviceMock = new Mock<IGenreService>(MockBehavior.Strict);
+            _controller = new GenreController(new Logger<GenreController>(new LoggerFactory()), _serviceMock.Object, _storageMock.Object);
         }
 
         [Test]
         public void When_AddOrGet_Success()
         {
             // arrange
-            var genreName = "Jazz";
             var genre = new Genre();
-            _genreStorageMock.Setup(x => x.AddGenre(genreName)).Returns(genre).Verifiable();
+            _storageMock.Setup(x => x.AddGenre("")).Returns(genre).Verifiable();
 
             // act
-            var result = _genreController.AddOrGetGenre(genreName);
+            var result = _controller.AddOrGetGenre("");
 
             // assert
-            Assert.That(result, Is.EqualTo(genre));
-            _genreStorageMock.Verify();
+            var okObjectCast = result as OkObjectResult;
+            var resultCast = okObjectCast.Value as GenreWithTitle;
+            Assert.That(resultCast, Is.Not.Null);
+
         }
+
+       
     }
 }

@@ -16,7 +16,7 @@ namespace Tests
 {
     internal class BandControllerTests
     {
-        private BandController _bandController;
+        private BandController _controller;
         private Mock<IBandStorage> _bandStorageMock;
         private Mock<IBandService> _bandServiceMock;
         private Mock<IGenreService> _genreServiceMock;
@@ -27,7 +27,7 @@ namespace Tests
             _bandStorageMock = new Mock<IBandStorage>(MockBehavior.Strict);
             _genreServiceMock = new Mock<IGenreService>(MockBehavior.Strict);
             _bandServiceMock = new Mock<IBandService>(MockBehavior.Strict);
-            _bandController = new BandController(_bandStorageMock.Object, _bandServiceMock.Object, _genreServiceMock.Object, new Logger<BandController>(new LoggerFactory()));
+            _controller = new BandController(_bandStorageMock.Object, _bandServiceMock.Object, _genreServiceMock.Object, new Logger<BandController>(new LoggerFactory()));
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace Tests
             });
 
             // act
-            var result = _bandController.GetBands();
+            var result = _controller.GetBands();
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -59,7 +59,7 @@ namespace Tests
             _bandStorageMock.Setup(x => x.GetBandById(2)).Returns((Band?)null);
 
             // act
-            var result = _bandController.GetBandDetails(2) as NotFoundObjectResult;
+            var result = _controller.GetBandDetails(2) as NotFoundObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -74,7 +74,7 @@ namespace Tests
             _genreServiceMock.Setup(x => x.GetGenreById(1)).Returns(new Genre() { Id = 1, Name = "Rock" }); // adicionei
 
             // act
-            var result = _bandController.GetBandDetails(1) as OkObjectResult;
+            var result = _controller.GetBandDetails(1) as OkObjectResult;
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -93,14 +93,14 @@ namespace Tests
             var name = "Iron Maiden";
             var origin = "England";
             var yearsActive = "1980 - present";
-            var genreId = 3;
+            var genreId = 1;
 
             var band = new Band();
             _genreServiceMock.Setup(x => x.GetGenreById(3)).Returns(new Genre());
             _bandServiceMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band);
 
             // act
-            var result = _bandController.AddBand(name, origin, yearsActive, genreId);
+            var result = _controller.AddBand(name, origin, yearsActive, genreId);
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -118,7 +118,7 @@ namespace Tests
             _genreServiceMock.Setup(x => x.GetGenreById(genreId)).Returns((Genre?)null);
 
             // act
-            var result = _bandController.AddBand("", "", "", genreId);
+            var result = _controller.AddBand("", "", "", genreId);
 
             // assert
             var castResult = result as BadRequestObjectResult;

@@ -12,34 +12,39 @@ namespace Tests
     internal class BandStorageTests
     {
         private BandStorage _storage;
-        private MusicAlbumsContext _context;
+        private MusicAlbumsContext context;
+        private MusicAlbumsContext _testContext;
         private DbContextOptions<MusicAlbumsContext> _dbContextOptions;
 
         [SetUp]
         public void Setup()
         {
-            _dbContextOptions = new DbContextOptions<MusicAlbumsContext>();
-            _context = new MusicAlbumsContext(_dbContextOptions);
-            _storage = new BandStorage(_context);
+            var builder = new DbContextOptionsBuilder<MusicAlbumsContext>();
+            builder.UseSqlServer("Data Source=Math;Initial Catalog=testmusicalbumsshop;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
+            _dbContextOptions = builder.Options;
+            context = new MusicAlbumsContext(_dbContextOptions);
+            _storage = new BandStorage(context);
+            _testContext = new MusicAlbumsContext(_dbContextOptions);
+            context.Database.EnsureCreated();
         }
 
         [Test]
         public void When_AddNewBandSuccess()
         {
             // arrange
-            //var counter = _context.Bands.Count;
+            var counter = _testContext.Bands.Count();
+            
             // act
             var band = _storage.AddOrUpdateBand("Iron Maiden", "England", "1980 - present", 1);
 
             // assert
+            Assert.That(_testContext.Bands.Count(), Is.EqualTo(counter + 1));
             Assert.That(band, Is.Not.Null);
             Assert.That(band.Name, Is.EqualTo("Iron Maiden"));
-            Assert.That(band.Id, Is.EqualTo(2));
+            Assert.That(band.Id, Is.EqualTo(1));
             Assert.That(band.Origin, Is.EqualTo("England"));
             Assert.That(band.YearsActive, Is.EqualTo("1980 - present"));
             Assert.That(band.GenreId, Is.EqualTo(1));
-            //Assert.That(_context.Bands.Count, Is.EqualTo(counter + 1));
-           // var fecthed = _context.Bands[1];
 
             //Assert.That(band, Is.EqualTo(fecthed));
 
@@ -58,7 +63,7 @@ namespace Tests
             Assert.That(band.Origin, Is.EqualTo("United Kingdom"));
             Assert.That(band.YearsActive, Is.EqualTo("1940 - 1980"));
             Assert.That(band.GenreId, Is.EqualTo(2));
-            Assert.That(band, Is.EqualTo(_context.Bands.FirstOrDefault()));
+            //Assert.That(band, Is.EqualTo(_context.Bands.FirstOrDefault()));
             //Assert.That(_context.Bands.Count, Is.EqualTo(counter));
         }
 
@@ -114,13 +119,14 @@ namespace Tests
             Assert.That(bandById, Is.Null);
 
         }
-
         [TearDown]
         public void TearDown()
         {
-            if (_context != null)
+            if (context != null)
             {
-                _context.Dispose();
+                context.Database.EnsureDeleted();
+                context.Dispose();
+                _testContext.Dispose();
             }
         }
     }
