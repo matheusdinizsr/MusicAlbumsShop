@@ -33,16 +33,19 @@ namespace Tests
         public void When_AddOrGet_Success()
         {
             // arrange
-            var genre = new Genre();
-            _storageMock.Setup(x => x.AddGenre("")).Returns(genre).Verifiable();
+            var genre = new Genre() {Id = 1, Name = "Rock" };
+            _storageMock.Setup(x => x.AddGenre("Rock")).Returns(genre).Verifiable();
 
             // act
-            var result = _controller.AddOrGetGenre("");
+            var result = _controller.AddOrGetGenre("Rock");
 
             // assert
-            var okObjectCast = result as OkObjectResult;
-            var resultCast = okObjectCast.Value as GenreWithTitle;
+            var okObjectCast = result as OkObjectResult ;
+            var resultCast = okObjectCast?.Value as GenreWithTitle;
             Assert.That(resultCast, Is.Not.Null);
+            Assert.That(resultCast.Name, Is.EqualTo("Rock"));
+            Assert.That(resultCast.GenreId, Is.EqualTo(1));
+            _storageMock.Verify();
 
         }
 

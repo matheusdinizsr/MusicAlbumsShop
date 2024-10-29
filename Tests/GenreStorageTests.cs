@@ -11,7 +11,8 @@ namespace Tests
     {
         private GenreStorage _storage;
         private MusicAlbumsContext context;
-        private MusicAlbumsContext _testContext;
+        private MusicAlbumsContext _assertContext;
+        private MusicAlbumsContext _arrangeContext;
         private DbContextOptions<MusicAlbumsContext> _dbContextOptions;
 
         [SetUp]
@@ -22,7 +23,8 @@ namespace Tests
             _dbContextOptions = builder.Options;
             context = new MusicAlbumsContext(_dbContextOptions);
             _storage = new GenreStorage(context);
-            _testContext = new MusicAlbumsContext(_dbContextOptions);
+            _arrangeContext = new MusicAlbumsContext(_dbContextOptions);
+            _assertContext = new MusicAlbumsContext(_dbContextOptions);
             context.Database.EnsureCreated();
         }
 
@@ -38,10 +40,9 @@ namespace Tests
             Assert.That(genre, Is.Not.Null);
             Assert.That(genre.Id, Is.EqualTo(1));
             Assert.That(genre.Name, Is.EqualTo("Blues"));
-            _testContext = new MusicAlbumsContext(_dbContextOptions);
-            var counter = _testContext.Genres.Count();
+            var counter = _assertContext.Genres.Count();
             Assert.That(counter, Is.EqualTo(1));
-            var fetched = _testContext.Genres.FirstOrDefault(g => g.Name == genre.Name);
+            var fetched = _assertContext.Genres.FirstOrDefault(g => g.Name == genre.Name);
             Assert.That(fetched, Is.Not.Null);
             Assert.That(genre.Id, Is.EqualTo(fetched.Id));
             Assert.That(genre.Name, Is.EqualTo(fetched.Name));
@@ -51,54 +52,49 @@ namespace Tests
         public void When_AddNewGenre_AlreadyExists()
         {
             //arrange
-            var arrangeGenre = _storage.AddGenre("Rock");
-            var counter = _testContext.Genres.Count();
+            var firstAddedGenre = _arrangeContext.Genres.Add(new Genre() { Id = 1, Name = "Rock"});
 
             //act
             var genre = _storage.AddGenre("Rock");
 
             //assert
-            Assert.That(arrangeGenre, Is.EqualTo(genre));
-            Assert.That(_testContext.Genres.Count, Is.EqualTo(counter));
+            Assert.That(_assertContext.Genres.Count, Is.EqualTo(1));
+            Assert.That(genre.Id, Is.EqualTo(1));
         }
 
         [Test]
         public void When_GetGenres_Success()
         {
             // arrange
-            var rockGenre = _storage.AddGenre("Rock");
-            var bluesGenre = _storage.AddGenre("Blues");
-            var counter = _testContext.Genres.Count();
+            var rockGenre = _arrangeContext.Genres.Add(new Genre() { Name = "Rock"});
+            var bluesGenre = _arrangeContext.Genres.Add(new Genre() { Name = "Blues"});
+            _arrangeContext.SaveChanges();
 
             // act
             var gotGenres = _storage.GetGenres();
 
             // assert
-            Assert.That(gotGenres.Length, Is.EqualTo(counter));
-            Assert.That(_testContext.Genres.Count(), Is.EqualTo(counter));
-            Assert.That(gotGenres.Count(x => x.Name == "Rock") == 1, Is.True);
-            Assert.That(_testContext.Genres.Count(x => x.Name == "Rock") == 1, Is.True);
-            Assert.That(gotGenres.Count(x => x.Name == "Blues") == 1, Is.True);
-            Assert.That(_testContext.Genres.Count(x => x.Name == "Blues") == 1, Is.True);
-
+            Assert.That(gotGenres.Count(x => x.Name == "Rock"), Is.EqualTo(1));
+            Assert.That(gotGenres.Count(x => x.Name == "Blues"), Is.EqualTo(1));
+            Assert.That(gotGenres.Length, Is.EqualTo(2));
+            
         }
 
         [Test]
         public void When_GetGenresById_Success()
         {
             // arrange
-            var rock = _storage.AddGenre("Rock");
-            var counter = _testContext.Genres.Count();
+            var rockGenre = _arrangeContext.Genres.Add(new Genre() { Name = "Rock"});
+            _arrangeContext.SaveChanges();
 
             // act
             var genre = _storage.GetGenreById(1);
 
             // assert
+            Assert.That(_assertContext.Genres.Count(), Is.EqualTo(1));
             Assert.That(genre, Is.Not.Null);
-            var fetched = _testContext.Genres.FirstOrDefault(g => g.Name == rock.Name);
-            Assert.That(fetched, Is.Not.Null);
-            Assert.That(genre.Id, Is.EqualTo(fetched.Id));
-            Assert.That(genre.Name, Is.EqualTo(fetched.Name));
+            Assert.That(genre.Id, Is.EqualTo(1));
+            Assert.That(genre.Name, Is.EqualTo("Rock"));
         }
 
         [TearDown]
@@ -108,7 +104,8 @@ namespace Tests
             {
                 context.Database.EnsureDeleted();
                 context.Dispose();
-                _testContext.Dispose();
+                _assertContext.Dispose();
+                _arrangeContext.Dispose();
             }
         }
     }
