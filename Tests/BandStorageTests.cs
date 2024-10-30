@@ -14,7 +14,8 @@ namespace Tests
     {
         private BandStorage _storage;
         private MusicAlbumsContext context;
-        private MusicAlbumsContext _testContext;
+        private MusicAlbumsContext _assertContext;
+        private MusicAlbumsContext _arrangeContext;
         private DbContextOptions<MusicAlbumsContext> _dbContextOptions;
 
         [SetUp]
@@ -26,7 +27,8 @@ namespace Tests
             _dbContextOptions = builder.Options;
             context = new MusicAlbumsContext(_dbContextOptions);
             _storage = new BandStorage(context);
-            _testContext = new MusicAlbumsContext(_dbContextOptions);
+            _assertContext = new MusicAlbumsContext(_dbContextOptions);
+            _arrangeContext = new MusicAlbumsContext(_dbContextOptions);
             context.Database.EnsureCreated();
         }
 
@@ -34,68 +36,81 @@ namespace Tests
         public void When_AddNewBandSuccess()
         {
             // arrange
-            var counter = _testContext.Bands.Count();
-            _testContext.Genres.Add(new Genre() { Name = "Rock" });
+            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
+            _arrangeContext.SaveChanges();
 
 
             // act
             var band = _storage.AddOrUpdateBand("Iron Maiden", "England", "1980 - present", 1);
 
             // assert
-            // testar com fetched também
-            Assert.That(_testContext.Bands.Count(), Is.EqualTo(counter + 1)); 
-            Assert.That(band, Is.Not.Null);
-            Assert.That(band.Name, Is.EqualTo("Iron Maiden"));
+            Assert.That(_assertContext.Bands.Count(), Is.EqualTo(1));
             Assert.That(band.Id, Is.EqualTo(1));
-            Assert.That(band.Origin, Is.EqualTo("England"));
-            Assert.That(band.YearsActive, Is.EqualTo("1980 - present"));
-            Assert.That(band.GenreId, Is.EqualTo(1));
-            
-            // Assert.That(band, Is.EqualTo(fecthed));
-
+            Assert.That(band.Name, Is.EqualTo("Iron Maiden"));
+            var fetched = _assertContext.Bands.Find(1);
+            Assert.That(fetched, Is.Not.Null);
+            Assert.That(fetched.Name, Is.EqualTo("Iron Maiden"));
+            Assert.That(fetched.Id, Is.EqualTo(1));
+            Assert.That(fetched.Origin, Is.EqualTo("England"));
+            Assert.That(fetched.YearsActive, Is.EqualTo("1980 - present"));
+            Assert.That(fetched.GenreId, Is.EqualTo(1));
         }
 
         [Test]
         public void When_UpdateBandSuccess()
         {
             // arrange
-            // var counter = _context.Bands.Count;
+            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
+            _arrangeContext.SaveChanges();
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            _arrangeContext.SaveChanges();
+
             // act
-            var band = _storage.AddOrUpdateBand("The Beatles", "United Kingdom", "1940 - 1980", 2);
+            var band = _storage.AddOrUpdateBand("The Beatles", "England", "1940 - 1980", 1);
 
             // assert
+            Assert.That(_assertContext.Bands.Count(), Is.EqualTo(1));
+            Assert.That(band, Is.Not.Null);
+            Assert.That(band.Id, Is.EqualTo(1));
             Assert.That(band.Name, Is.EqualTo("The Beatles"));
-            Assert.That(band.Origin, Is.EqualTo("United Kingdom"));
-            Assert.That(band.YearsActive, Is.EqualTo("1940 - 1980"));
-            Assert.That(band.GenreId, Is.EqualTo(2));
-            //Assert.That(band, Is.EqualTo(_context.Bands.FirstOrDefault()));
-            //Assert.That(_context.Bands.Count, Is.EqualTo(counter));
+            var fetched = _assertContext.Bands.Find(1);
+            Assert.That(fetched, Is.Not.Null);
+            Assert.That(fetched.Id, Is.EqualTo(1));
+            Assert.That(fetched.Name, Is.EqualTo("The Beatles"));
+            Assert.That(fetched.Origin, Is.EqualTo("England"));
+            Assert.That(fetched.YearsActive, Is.EqualTo("1940 - 1980"));
+            Assert.That(fetched.GenreId, Is.EqualTo(1));
         }
 
         [Test]
         public void When_AddBandWithWrongGenreId_ReturnsNull()
         {
             // arrange
-            //var counter = _context.Bands.Count;
 
             // act
-            var band = _storage.AddOrUpdateBand("Calypso", "Pará", "2010 - 2015", 99);
+            var band = _storage.AddOrUpdateBand("", "", "", 99);
 
             // assert
             Assert.That(band == null);
-            // Assert.That(_context.Bands.Count, Is.EqualTo(counter) );
+            Assert.That(_assertContext.Bands.Count(), Is.EqualTo(0));
         }
 
         [Test]
         public void When_GetBandWithNameSuccess()
         {
             // arrange
+            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
+            _arrangeContext.SaveChanges();
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            _arrangeContext.SaveChanges();
+
+
             // act
             var bandWithName = _storage.GetBands();
 
             // assert
             Assert.That(bandWithName, Is.Not.Null);
-            Assert.That(bandWithName.Count, Is.EqualTo(1));
+            Assert.That(bandWithName.Count(), Is.EqualTo(1));
             Assert.That(bandWithName[0].BandId, Is.EqualTo(1));
             Assert.That(bandWithName[0].Name, Is.EqualTo("The Beatles"));
         }
@@ -104,12 +119,18 @@ namespace Tests
         public void When_GetBandByIdSuccess()
         {
             // arrange
+            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
+            _arrangeContext.SaveChanges();
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            _arrangeContext.SaveChanges();
+
             // act
-            var bandById = _storage.GetBandById(1);
+            var band = _storage.GetBandById(1);
 
             //assert
-            Assert.That(bandById, Is.Not.Null);
-            // Assert.That(bandById, Is.EqualTo(_context.Bands[0]));
+            Assert.That(band, Is.Not.Null);
+            Assert.That(band.Id, Is.EqualTo(1));
+            Assert.That(band.Name, Is.EqualTo("The Beatles"));
 
         }
 
@@ -117,6 +138,7 @@ namespace Tests
         public void When_GetBandByIdFail()
         {
             // arrange
+
             // act
             var bandById = _storage.GetBandById(2);
 
@@ -131,7 +153,8 @@ namespace Tests
             {
                 context.Database.EnsureDeleted();
                 context.Dispose();
-                _testContext.Dispose();
+                _assertContext.Dispose();
+                _arrangeContext.Dispose();
             }
         }
     }
