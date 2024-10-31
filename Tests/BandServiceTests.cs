@@ -30,20 +30,23 @@ namespace Tests
         public void When_AddBand_Success()
         {
             // arrange
-            var name = "Iron Maiden";
-            var origin = "England";
-            var yearsActive = "1980 - present";
-            var genreId = 3;
+            var name = "";
+            var origin = "";
+            var yearsActive = "";
+            var genreId = 1;
 
             var band = new Band();
-            _bandStorageMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band);
+            _bandStorageMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band).Verifiable();
 
             // act
             var result = _bandService.AddOrUpdateBand(name, origin, yearsActive, genreId);
             
             // assert
             Assert.That(band, Is.EqualTo(result));
+            _bandStorageMock.Verify();
         }
+
+
 
     }
 }
