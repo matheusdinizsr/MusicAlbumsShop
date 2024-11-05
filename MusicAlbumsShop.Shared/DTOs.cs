@@ -1,4 +1,4 @@
-﻿namespace MusicAlbumsShop.DTOs
+﻿namespace MusicAlbumsShop.Shared.DTOs
 {
     public class GetGenresResponse
     {

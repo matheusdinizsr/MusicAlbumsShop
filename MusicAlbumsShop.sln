@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicAlbumsShop", "MusicAlbumsShop\MusicAlbumsShop.csproj", "{7A474B13-06E4-4796-B64F-37A01E53E731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicAlbumsShop", "MusicAlbumsShop\MusicAlbumsShop.csproj", "{7A474B13-06E4-4796-B64F-37A01E53E731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A47D367D-E011-4280-8282-FECA857232CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{A47D367D-E011-4280-8282-FECA857232CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicAlbumsShop.Shared", "MusicAlbumsShop.Shared\MusicAlbumsShop.Shared.csproj", "{014C1067-0FB1-462B-87A9-0E2D873B35B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicAlbumsShop.FrontEnd", "MusicAlbumsShop.FrontEnd\MusicAlbumsShop.FrontEnd.csproj", "{B4B7518E-A096-4BB0-999F-D7389D125764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{A47D367D-E011-4280-8282-FECA857232CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A47D367D-E011-4280-8282-FECA857232CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A47D367D-E011-4280-8282-FECA857232CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014C1067-0FB1-462B-87A9-0E2D873B35B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014C1067-0FB1-462B-87A9-0E2D873B35B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014C1067-0FB1-462B-87A9-0E2D873B35B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014C1067-0FB1-462B-87A9-0E2D873B35B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4B7518E-A096-4BB0-999F-D7389D125764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B7518E-A096-4BB0-999F-D7389D125764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B7518E-A096-4BB0-999F-D7389D125764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B7518E-A096-4BB0-999F-D7389D125764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

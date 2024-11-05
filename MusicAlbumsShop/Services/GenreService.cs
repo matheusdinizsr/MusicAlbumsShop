@@ -1,5 +1,5 @@
-﻿using MusicAlbumsShop.DTOs;
-using MusicAlbumsShop.Models;
+﻿using MusicAlbumsShop.Models;
+using MusicAlbumsShop.Shared.DTOs;
 using MusicAlbumsShop.Storage;
 
 namespace MusicAlbumsShop.Services // logica/regra de negocio

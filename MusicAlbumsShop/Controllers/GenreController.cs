@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Services;
+using MusicAlbumsShop.Shared.DTOs;
 using MusicAlbumsShop.Storage;
 
 namespace MusicAlbumsShop.Controllers

@@ -60,9 +60,9 @@ namespace Tests
         public void When_UpdateBandSuccess()
         {
             // arrange
-            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
-            _arrangeContext.SaveChanges();
-            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            var rockGenre = new Genre() { Name = "Rock" };
+            _arrangeContext.Genres.Add(rockGenre);
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre});
             _arrangeContext.SaveChanges();
 
             // act

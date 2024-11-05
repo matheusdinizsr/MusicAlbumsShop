@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
+using MusicAlbumsShop.Shared.DTOs;
 using System.Reflection.Metadata.Ecma335;
-using static MusicAlbumsShop.DTOs.AlbumWithTitle;
 
 namespace MusicAlbumsShop.Storage
 {

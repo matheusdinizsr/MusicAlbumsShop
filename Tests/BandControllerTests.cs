@@ -31,72 +31,17 @@ namespace Tests
         }
 
         [Test]
-        public void When_GetBands_Success()
-        {
-            // arrange
-            _bandStorageMock.Setup(x => x.GetBands()).Returns(new[] {
-                new BandWithName()
-                {
-                    BandId = 1,
-                    Name = "The Beatles"
-                }
-            });
-
-            // act
-            var result = _controller.GetBands();
-
-            // assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(result[0].BandId, Is.EqualTo(1));
-            Assert.That(result[0].Name, Is.EqualTo("The Beatles"));
-        }
-
-        [Test]
-        public void When_GetDetails_NotFound()
-        {
-            // arrange
-            _bandStorageMock.Setup(x => x.GetBandById(2)).Returns((Band?)null);
-
-            // act
-            var result = _controller.GetBandDetails(2) as NotFoundObjectResult;
-
-            // assert
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test]
-        public void When_GetDetails_Success()
-        {
-            // arrange
-            _bandStorageMock.Setup(x => x.GetBandById(1))
-                .Returns(new Band() { Id = 1, GenreId = 1, Name = "The Beatles", Origin = "England", YearsActive = "1950 - 1970" });
-            _genreServiceMock.Setup(x => x.GetGenreById(1)).Returns(new Genre() { Id = 1, Name = "Rock" }); // adicionei
-
-            // act
-            var result = _controller.GetBandDetails(1) as OkObjectResult;
-
-            // assert
-            Assert.That(result, Is.Not.Null);
-            var band = result.Value as BandDetails; // casting
-            Assert.That(band.Name, Is.EqualTo("The Beatles"));
-            Assert.That(band.GenreName, Is.EqualTo("Rock"));
-            Assert.That(band.Origin, Is.EqualTo("England"));
-            Assert.That(band.YearsActive, Is.EqualTo("1950 - 1970"));
-
-        }
-
-        [Test]
         public void When_AddBand_Success()
         {
             // arrange
-            var name = "Iron Maiden";
-            var origin = "England";
-            var yearsActive = "1980 - present";
+            var id = 1;
+            var name = "";
+            var origin = "";
+            var yearsActive = "";
             var genreId = 1;
 
-            var band = new Band();
-            _genreServiceMock.Setup(x => x.GetGenreById(3)).Returns(new Genre());
+            var band = new Band() { Id = id, Name = name };
+            _genreServiceMock.Setup(x => x.GetGenreById(1)).Returns(new Genre() { Id = 1 });
             _bandServiceMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band);
 
             // act
@@ -105,8 +50,9 @@ namespace Tests
             // assert
             Assert.That(result, Is.Not.Null);
             var castResult = result as OkObjectResult;
-            var bandCast = castResult.Value as Band;
-            Assert.That(bandCast, Is.EqualTo(band));
+            var bandCast = castResult?.Value as BandWithName;
+            Assert.That(bandCast?.BandId, Is.EqualTo(1));
+            Assert.That(bandCast.Name, Is.EqualTo(""));
         }
 
         [Test]
@@ -125,5 +71,59 @@ namespace Tests
             Assert.That(castResult, Is.Not.Null);
             Assert.That(castResult.Value, Is.EqualTo("Genre ID does not exist"));
         }
+
+        [Test]
+        public void When_GetBands_Success()
+        {
+            // arrange
+            _bandStorageMock.Setup(x => x.GetBands()).Returns(new BandWithName[] {new BandWithName() {BandId = 1, Name = "The Beatles"} });
+
+            // act
+            var result = _controller.GetBands();
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result[0].BandId, Is.EqualTo(1));
+            Assert.That(result[0].Name, Is.EqualTo("The Beatles"));
+        }
+
+        [Test]
+        public void When_GetDetails_NotFound()
+        {
+            // arrange
+            _bandStorageMock.Setup(x => x.GetBandById(1)).Returns((Band?)null);
+
+            // act
+            var result = _controller.GetBandDetails(1) as NotFoundObjectResult;
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public void When_GetDetails_Success()
+        {
+            // arrange
+            _bandStorageMock.Setup(x => x.GetBandById(1))
+                .Returns(new Band() { Id = 1, GenreId = 1, Name = "The Beatles", Origin = "England", YearsActive = "1950 - 1970" });
+            _genreServiceMock.Setup(x => x.GetGenreById(1)).Returns(new Genre() { Id = 1, Name = "Rock" });
+
+            // act
+            var result = _controller.GetBandDetails(1) as OkObjectResult;
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            var band = result.Value as BandDetails; // casting
+            Assert.That(band.Name, Is.EqualTo("The Beatles"));
+            Assert.That(band.GenreName, Is.EqualTo("Rock"));
+            Assert.That(band.Origin, Is.EqualTo("England"));
+            Assert.That(band.YearsActive, Is.EqualTo("1950 - 1970"));
+
+        }
+
+       
+
+        
     }
 }
