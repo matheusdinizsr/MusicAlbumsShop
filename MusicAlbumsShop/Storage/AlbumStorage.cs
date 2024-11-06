@@ -29,41 +29,24 @@ namespace MusicAlbumsShop.Storage
                 return null;
             }
 
-            var found = _context.Albums
+            var album = _context.Albums
                 .Where(a => a.BandId == bandId)
                 .Where(a => a.Title == title)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? new Album();
 
-            if (found != null)
+            if (album.Id == 0)
             {
-                found.Title = title;
-                found.ReleaseDate = releaseDate;
-                found.BandId = bandId;
-                _context.SaveChanges();
-                return found;
-            }
-            else
-            {
-                var album = new Album();
-                album.Title = title;
-                album.ReleaseDate = releaseDate;
-                album.BandId = bandId;
                 _context.Albums.Add(album);
-                _context.SaveChanges();
-                return album;
             }
 
-            //?? new Album();
+            album.Title = title;
+            album.ReleaseDate = releaseDate;
+            album.BandId = bandId;
 
-            //found.Title = title;
-            //found.ReleaseDate = releaseDate;
-            //found.BandId = bandId;
+            _context.SaveChanges();
+            return album;
 
-            //_context.Albums.Add(found);
 
-            //_context.SaveChanges();
-
-            //return found;
         }
 
         public Album? GetAlbumById(int albumId)
@@ -79,7 +62,7 @@ namespace MusicAlbumsShop.Storage
 
             if (band == null)
             {
-                return null; // Retorna nulo
+                return null;
             }
 
             var albums = _context.Albums

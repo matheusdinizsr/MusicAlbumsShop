@@ -15,7 +15,7 @@ namespace Tests
     internal class AlbumServiceTests
     {
         private AlbumService _albumService;
-        private MusicAlbumsContext _context;
+        private MusicAlbumsContext context;
         private DbContextOptions<MusicAlbumsContext> _dbContextOptions;
         private Mock<IAlbumStorage> _albumStorageMock;
 
@@ -23,7 +23,7 @@ namespace Tests
         public void Setup()
         {
             _dbContextOptions = new DbContextOptions<MusicAlbumsContext>();
-            _context = new MusicAlbumsContext(_dbContextOptions);
+            context = new MusicAlbumsContext(_dbContextOptions);
             _albumStorageMock = new Mock<IAlbumStorage>(MockBehavior.Strict);
             _albumService = new AlbumService(_albumStorageMock.Object);
         }
@@ -32,29 +32,29 @@ namespace Tests
         public void When_AddAlbum_Success()
         {
             // arrange
-            var title = "";
-            var bandId = 1;
-            var releaseDate = DateTime.Now;
 
-            var album = new Album();
-            _albumStorageMock.Setup(x => x.AddOrUpdateAlbum(title, releaseDate, bandId))
+            var album = new Album() {Id = 1, Title = "", BandId = 1};
+            _albumStorageMock.Setup(x => x.AddOrUpdateAlbum("", DateTime.Today, 1))
                 .Returns(album)
                 .Verifiable();
 
             // act
-            var result = _albumService.AddOrUpdateAlbum(title, releaseDate, bandId);
+            var result = _albumService.AddOrUpdateAlbum("", DateTime.Today, 1);
 
             // assert
-            Assert.That(result, Is.EqualTo(album));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo(1));
+            Assert.That(result.Title, Is.EqualTo(""));
+            Assert.That(result.BandId, Is.EqualTo(1));
 
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_context != null)
+            if (context != null)
             {
-                _context.Dispose();
+                context.Dispose();
             }
         }
     }

@@ -1,12 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -99,9 +93,9 @@ namespace Tests
         public void When_GetBandWithNameSuccess()
         {
             // arrange
-            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
-            _arrangeContext.SaveChanges();
-            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            var rockGenre = new Genre() { Name = "Rock" };
+            _arrangeContext.Genres.Add(rockGenre);
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre });
             _arrangeContext.SaveChanges();
 
 
@@ -119,9 +113,9 @@ namespace Tests
         public void When_GetBandByIdSuccess()
         {
             // arrange
-            _arrangeContext.Genres.Add(new Genre() { Name = "Rock" });
-            _arrangeContext.SaveChanges();
-            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", GenreId = 1 });
+            var rockGenre = new Genre() { Name = "Rock" };
+            _arrangeContext.Genres.Add(rockGenre);
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre});
             _arrangeContext.SaveChanges();
 
             // act

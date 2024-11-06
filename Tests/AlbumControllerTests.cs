@@ -2,16 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using MusicAlbumsShop.Controllers;
-using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Services;
+using MusicAlbumsShop.Shared.DTOs;
 using MusicAlbumsShop.Storage;
 using NUnit.Framework.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -32,17 +27,16 @@ namespace Tests
         }
 
         [Test]
-        public void When_AddAlbum_Success()
+        public void When_AddOrUpdateAlbum_Success()
         {
             // arrange
             var title = "";
-            var releaseDate = DateTime.Now;
+            var releaseDate = DateTime.Today;
             var bandId = 1;
+            var band = new Band() { Id = 1, Name = "" };
+            var album = new Album() { Id = 1, Title = title, ReleaseDate = releaseDate, Band = band };
 
-            var album = new Album();
-            _bandStorageMock.Setup(x => x.GetBandById(bandId)).Returns(new Band()).Verifiable();
             _albumServiceMock.Setup(x => x.AddOrUpdateAlbum(title, releaseDate, bandId)).Returns(album).Verifiable();
-            //_albumStorageMock.Setup(x => x.AddOrUpdateAlbum(title, releaseDate, bandId)).Returns(album).Verifiable();
 
             // act
             var result = _albumController.AddOrUpdateAlbum(title, releaseDate, bandId);
@@ -50,31 +44,9 @@ namespace Tests
             // assert
             Assert.That(result, Is.Not.Null);
             var resultCast = result as OkObjectResult;
-            var albumCast = resultCast.Value as Album;
-            Assert.That(albumCast, Is.EqualTo(album));
-            _bandStorageMock.Verify();
-            _albumServiceMock.Verify();
-        }
-
-        [Test]
-        public void When_GetAlbumsFromABand_Success()
-        {
-            // arrange
-            var bandId = 1;
-            var albumsReturned = new AlbumWithTitle[] { };
-            
-            _bandStorageMock.Setup(x => x.GetBandById(bandId)).Returns(new Band()).Verifiable();
-            _albumStorageMock.Setup(x => x.GetAlbumsFromABand(bandId)).Returns(albumsReturned).Verifiable();
-
-            // act
-            var result = _albumController.GetAlbumsFromABand(bandId);
-
-            // assert
-            Assert.That(result, Is.Not.Null );
-            var resultCast = result as OkObjectResult;
-            var albumsCast = resultCast.Value as AlbumWithTitle[];
-            Assert.That(albumsCast, Is.EqualTo(albumsReturned));
-            _bandStorageMock.Verify();
+            var albumCast = resultCast?.Value as AlbumWithTitle;
+            Assert.That(albumCast?.AlbumId, Is.EqualTo(album.Id));
+            Assert.That(albumCast.Title, Is.EqualTo(album.Title));
             _albumServiceMock.Verify();
         }
 
@@ -82,27 +54,56 @@ namespace Tests
         public void When_GetAlbumsFromABand_BandDoesntExist()
         {
             // arrange
-            var bandId = 1;
-
-            _bandStorageMock.Setup(x => x.GetBandById(bandId)).Returns(null as Band).Verifiable();
+            _albumStorageMock.Setup(x => x.GetAlbumsFromABand(1)).Returns(null as AlbumWithTitle[]).Verifiable();
 
             // act
-            var result = _albumController.GetAlbumsFromABand(bandId);
+            var result = _albumController.GetAlbumsFromABand(1);
 
             // assert
-            var resultCast = result as BadRequestObjectResult;
-            Assert.That(resultCast.Value, Is.EqualTo("Band does not exist"));
+            var resultCast = result as NotFoundObjectResult;
+            Assert.That(resultCast?.Value, Is.EqualTo("Band does not exist"));
         }
 
-        public void When__GetAlbumDetails_Success()
+        [Test]
+        public void When_GetAlbumsFromABand_Success()
         {
             // arrange
+            var albumsReturned = new AlbumWithTitle[] { };
 
+            _albumStorageMock.Setup(x => x.GetAlbumsFromABand(1)).Returns(albumsReturned).Verifiable();
 
             // act
-
+            var result = _albumController.GetAlbumsFromABand(1);
 
             // assert
+            Assert.That(result, Is.Not.Null);
+            var resultCast = result as OkObjectResult;
+            var albumsCast = resultCast?.Value as AlbumWithTitle[];
+            Assert.That(albumsCast, Is.Not.Null);
+            _albumStorageMock.Verify();
+        }
+
+       
+
+        public void When_GetAlbumDetails_Success()
+        {
+            // arrange
+            var band = new Band() { Name = "" };
+            var album = new Album() { Id = 1, Title = "", Band = band, ReleaseDate = DateTime.Today };
+            _albumStorageMock.Setup(x => x.GetAlbumById(1)).Returns(album).Verifiable();
+
+            // act
+            var result = _albumController.GetAlbumDetails(1);
+
+            // assert
+            Assert.That(result, Is.Not.Null );
+            var resultCast = result as OkObjectResult;
+            var albumCast = resultCast?.Value as AlbumDetails;
+            Assert.That(albumCast?.Title, Is.EqualTo(album.Title));
+            Assert.That(albumCast.ReleaseDate, Is.EqualTo(album.ReleaseDate));
+            Assert.That(albumCast.BandName, Is.EqualTo(album.Band.Name));
+            _albumStorageMock.Verify();
+
         }
     }
 }

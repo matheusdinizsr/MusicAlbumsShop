@@ -2,15 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using MusicAlbumsShop.Controllers;
-using MusicAlbumsShop.DTOs;
 using MusicAlbumsShop.Models;
 using MusicAlbumsShop.Services;
+using MusicAlbumsShop.Shared.DTOs;
 using MusicAlbumsShop.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
