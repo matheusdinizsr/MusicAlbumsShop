@@ -73,5 +73,20 @@ namespace MusicAlbumsShop.Controllers
             return Ok(dto);
         }
 
+        [HttpDelete]
+        public IActionResult DeleteBandById(int id)
+        {
+            var band = _bandStorage.DeleteBandById(id);
+            if (band == null)
+            {
+                return NotFound("Id not found");
+            }
+
+            var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
+
+            return Ok(bandDto);
+
+        }
+
     }
 }

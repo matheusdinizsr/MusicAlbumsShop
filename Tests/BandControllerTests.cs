@@ -110,11 +110,28 @@ namespace Tests
             // assert
             Assert.That(result, Is.Not.Null);
             var band = result.Value as BandDetails; // casting
-            Assert.That(band.Name, Is.EqualTo("The Beatles"));
+            Assert.That(band?.Name, Is.EqualTo("The Beatles"));
             Assert.That(band.GenreName, Is.EqualTo("Rock"));
             Assert.That(band.Origin, Is.EqualTo("England"));
             Assert.That(band.YearsActive, Is.EqualTo("1950 - 1970"));
 
+        }
+
+        [Test]
+        public void When_DeleteBandById_Success()
+        {
+            // arrange
+            _bandStorageMock.Setup(x => x.DeleteBandById(1))
+                .Returns(new Band() { Id = 1, GenreId = 1, Name = "", Origin = "", YearsActive = "" });
+
+            // act
+            var result = _controller.DeleteBandById(1) as OkObjectResult;
+
+            // assert
+            Assert.That(result, Is.Not.Null);
+            var band = result.Value as BandWithName;
+            Assert.That(band?.BandId, Is.EqualTo(1));
+            Assert.That(band.Name, Is.EqualTo(""));
         }
 
        

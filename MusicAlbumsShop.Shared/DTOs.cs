@@ -2,7 +2,7 @@
 {
     public class GetGenresResponse
     {
-        public string[] Genres { get; set; }
+        public GenreWithTitle[] GenresAndIds { get; set; }
     }
 
     public class BandWithName

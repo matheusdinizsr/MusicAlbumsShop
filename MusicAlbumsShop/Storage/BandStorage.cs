@@ -8,6 +8,7 @@ namespace MusicAlbumsShop.Storage
         public Band? AddOrUpdateBand(string name, string origin, string yearsActive, int genreId);
         public BandWithName[] GetBands();
         public Band? GetBandById(int id);
+        public Band? DeleteBandById(int id);
     }
     public class BandStorage : IBandStorage
     {
@@ -53,6 +54,21 @@ namespace MusicAlbumsShop.Storage
             var result = _context.Bands.Find(id);
 
             return result;
+        }
+
+        public Band? DeleteBandById(int id)
+        {
+            var band = _context.Bands.Where(b => b.Id == id).FirstOrDefault();
+
+            if (band == null)
+            {
+                return null;
+            }
+
+            _context.Bands.Remove(band);
+            _context.SaveChanges();
+            return band;
+
         }
 
     }

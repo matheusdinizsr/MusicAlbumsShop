@@ -140,6 +140,25 @@ namespace Tests
             Assert.That(bandById, Is.Null);
 
         }
+
+        [Test]
+        public void When_DeleteBandById_Success()
+        {
+            // arrange
+            var rockGenre = new Genre() { Name = "Rock" };
+            _arrangeContext.Genres.Add(rockGenre);
+            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre });
+            _arrangeContext.SaveChanges();
+
+            // act
+            var result = _storage.DeleteBandById(1);
+
+            // aseert
+            Assert.That(_assertContext.Bands.Count(), Is.EqualTo(0));
+            Assert.That(result?.Id, Is.EqualTo(1));
+            Assert.That(result.Name, Is.EqualTo("The Beatles"));
+        }
+
         [TearDown]
         public void TearDown()
         {

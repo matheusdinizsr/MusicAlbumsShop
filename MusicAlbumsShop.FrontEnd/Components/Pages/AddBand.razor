@@ -1,0 +1,67 @@
+﻿@page "/bands/addband"
+@using MusicAlbumsShop.Shared.DTOs
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<h3>Add Band</h3>
+<AlertMessage Message="@message"></AlertMessage>
+
+<section>
+
+    <div class="row mt-2">
+        <label class="text-muted">Name</label>
+        <InputText class="form-control" @bind-Value=name/>
+
+    </div>
+
+    <div class="row mt-2">
+        <label class="text-muted">Origin</label>
+        <InputText class="form-control" @bind-Value=origin />
+    </div>
+
+    <div class="row mt-2">
+        <label class="text-muted">Years Active</label>
+        <InputText class="form-control" @bind-Value=yearsActive />
+    </div>
+
+    <div class="row mt-2">
+        <label class="text-muted">Genre</label>
+        <InputSelect class="form-select" @bind-Value=genreId>
+            @foreach (var g in _genresAndIds)
+            {
+                <option value="@g.GenreId">@g.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button class="btn btn-primary mt-3" @onclick="Add">Add</button>
+</section>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        _genresAndIds = await _apiClientService.GetGenres();
+        genreId = _genresAndIds[0].GenreId;
+    }
+
+    private ApiClientService _apiClientService = new ApiClientService();
+    private GenreWithTitle[] _genresAndIds = new GenreWithTitle[] { };
+    private BandDetails band = new BandDetails();
+
+    string name = "asd";
+    string origin = "asdasd";
+    string yearsActive = "";
+    int genreId = 0;
+    string message = "";
+
+    public async Task Add()
+    {
+        await _apiClientService.AddBandAsync(name, origin, yearsActive, genreId);
+        message = "Band created successfully";
+        name = "";
+        origin = "";
+        yearsActive = "";
+    }
+
+}

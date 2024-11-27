@@ -23,7 +23,7 @@ namespace MusicAlbumsShop.Services // logica/regra de negocio
         {
             var genres = _storage.GetGenres();
             var response = new GetGenresResponse();
-            response.Genres = genres.Select(x => x.Name).ToArray(); // Linq // projeção
+            response.GenresAndIds = genres.Select(x => new GenreWithTitle() {GenreId = x.Id, Name = x.Name }).ToArray(); // Linq // projeção
             return response;
         }
         public Genre? GetGenre(string genre)

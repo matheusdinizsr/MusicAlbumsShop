@@ -1,10 +1,59 @@
 ﻿@page "/bands"
+@using MusicAlbumsShop.Shared.DTOs
+@rendermode InteractiveServer
 @attribute [StreamRendering]
+@inject NavigationManager Navigation
 
 <PageTitle>Bands</PageTitle>
 
-<h1>Bands</h1>
+<h1>
+    Bands
+    <button class="btn btn-primary" @onclick="NavigateToAddBand"><i class="bi bi-plus-lg"></i></button>
+</h1>
+
+<section class="p-2 border shadow">
+    @foreach (var band in _bands)
+    {
+        <div class="row">
+            <div class="col-auto align-middle">
+                <button class="btn btn-primary btn-sm"><i class="bi bi-pen"></i></button>
+                <button class="btn btn-primary btn-sm" @onclick="DeleteBand"><i class="bi bi-trash"></i></button>
+            </div>
+            <div class="col-auto align-middle">
+                <span class="align-middle">@band.BandId</span>
+            </div>
+            <div class="col align-middle">
+                <span class="align-middle">@band.Name</span>
+            </div>
+        </div>
+
+    }
+</section>
+
 
 @code {
-  
+
+    private ApiClientService _apiClientService = new ApiClientService();
+    private BandWithName[]? _bands = [];
+
+    protected override void OnInitialized()
+    {
+        GetBands();
+    }
+
+    private async void GetBands()
+    {
+        _bands = await _apiClientService.GetBands();
+        StateHasChanged();
+    }
+    private void NavigateToAddBand()
+    {
+        Navigation.NavigateTo("bands/addband");
+    }
+
+    private void DeleteBand(MouseEventArgs e)
+    {
+        _apiClientService.DeleteBand(3);
+        StateHasChanged();
+    }
 }
