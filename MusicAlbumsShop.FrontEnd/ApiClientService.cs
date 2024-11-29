@@ -19,6 +19,13 @@ namespace MusicAlbumsShop.FrontEnd
             return result;
         }
 
+        public async Task<BandDetails?> GetBandDetails(int bandId)
+        {
+            var result = await _httpClient.GetFromJsonAsync<BandDetails>($"{_apiAddress}/band/{bandId}/details");
+
+            return result;
+        }
+
         public async Task AddBandAsync(string name, string origin, string yearsActive, int genreId)
         {
             await _httpClient.PostAsync($"{_apiAddress}/band?name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
@@ -31,13 +38,9 @@ namespace MusicAlbumsShop.FrontEnd
             return result?.GenresAndIds ?? [];
         }
 
-        public async Task<BandWithName?> DeleteBand(int id)
+        public async Task DeleteBand(int id)
         {
-            var delete = await _httpClient.DeleteAsync($"{_apiAddress}/band/delete?id={id}");
-
-            var band = await delete.Content.ReadFromJsonAsync<BandWithName>();
-
-            return band;
+            var delete = await _httpClient.DeleteAsync($"{_apiAddress}/band?id={id}");
         }
     }
 }

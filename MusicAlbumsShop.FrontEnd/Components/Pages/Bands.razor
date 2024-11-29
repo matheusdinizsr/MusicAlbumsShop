@@ -16,8 +16,8 @@
     {
         <div class="row">
             <div class="col-auto align-middle">
-                <button class="btn btn-primary btn-sm"><i class="bi bi-pen"></i></button>
-                <button class="btn btn-primary btn-sm" @onclick="DeleteBand"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-primary btn-sm" @onclick=@(() => EditBand(band.BandId)) ><i class="bi bi-pen"></i></button>
+                <button class="btn btn-primary btn-sm" @onclick="@(() => DeleteBand(band.BandId))"><i class="bi bi-trash"></i></button>
             </div>
             <div class="col-auto align-middle">
                 <span class="align-middle">@band.BandId</span>
@@ -51,9 +51,14 @@
         Navigation.NavigateTo("bands/addband");
     }
 
-    private void DeleteBand(MouseEventArgs e)
+    private void DeleteBand(int bandId)
     {
-        _apiClientService.DeleteBand(3);
-        StateHasChanged();
+        _apiClientService.DeleteBand(bandId);
+        _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
+    }
+    private async void EditBand(int bandId)
+    {
+        var band = await _apiClientService.GetBandDetails(bandId);
+        Navigation.NavigateTo($"bands/editband/{band.Name}/{band.Origin}/{band.YearsActive}/{band.GenreName}");
     }
 }

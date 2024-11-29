@@ -77,6 +77,7 @@ namespace MusicAlbumsShop.Controllers
         public IActionResult DeleteBandById(int id)
         {
             var band = _bandStorage.DeleteBandById(id);
+            
             if (band == null)
             {
                 return NotFound("Id not found");

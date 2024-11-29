@@ -1,32 +1,32 @@
-﻿@page "/bands/addband"
+﻿@page "/bands/editband/{Name}/{Origin}/{YearsActive}/{GenreName}"
 @using MusicAlbumsShop.Shared.DTOs
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
-<h3>Add Band</h3>
+<h3>Edit Band</h3>
 <AlertMessage Message="@message"></AlertMessage>
 
 <section>
 
     <div class="row mt-2">
         <label class="text-muted">Name</label>
-        <InputText class="form-control" @bind-Value=name/>
+        <InputText class="form-control" @bind-Value=Name />
 
     </div>
 
     <div class="row mt-2">
         <label class="text-muted">Origin</label>
-        <InputText class="form-control" @bind-Value=origin />
+        <InputText class="form-control" @bind-Value=Origin />
     </div>
 
     <div class="row mt-2">
         <label class="text-muted">Years Active</label>
-        <InputText class="form-control" @bind-Value=yearsActive />
+        <InputText class="form-control" @bind-Value=YearsActive />
     </div>
 
     <div class="row mt-2">
         <label class="text-muted">Genre</label>
-        <InputSelect class="form-select" @bind-Value=genreId>
+        <InputSelect class="form-select" @bind-Value=GenreId>
             @foreach (var g in _genresAndIds)
             {
                 <option value="@g.GenreId">@g.Name</option>
@@ -34,7 +34,7 @@
         </InputSelect>
     </div>
 
-    <button class="btn btn-primary mt-3" @onclick="Add">Add</button>
+    <button class="btn btn-primary mt-3" @onclick="Save">Save</button>
 </section>
 
 
@@ -42,26 +42,38 @@
     protected override async Task OnInitializedAsync()
     {
         _genresAndIds = await _apiClientService.GetGenres();
-        genreId = _genresAndIds[0].GenreId;
+        var bandGenre = _genresAndIds.Where(g => g.Name == GenreName).LastOrDefault();
+        GenreId = bandGenre.GenreId;
+
+
     }
+
+    protected override void OnParametersSet()
+    {
+        var bandName = Name;
+    }
+
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Origin { get; set; }
+    [Parameter]
+    public string YearsActive { get; set; }
+    [Parameter]
+    public string GenreName { get; set; }
+    public int GenreId { get; set; }
+
 
     private ApiClientService _apiClientService = new ApiClientService();
     private GenreWithTitle[] _genresAndIds = new GenreWithTitle[] { };
     private BandDetails band = new BandDetails();
 
-    string name = "";
-    string origin = "";
-    string yearsActive = "";
-    int genreId = 0;
     string message = "";
 
-    public async Task Add()
+    public async Task Save()
     {
-        await _apiClientService.AddBandAsync(name, origin, yearsActive, genreId);
-        message = "Band created successfully";
-        name = "";
-        origin = "";
-        yearsActive = "";
+        await _apiClientService.AddBandAsync(Name, Origin, YearsActive, GenreId);
+        message = "Band updated successfully";
     }
 
 }
