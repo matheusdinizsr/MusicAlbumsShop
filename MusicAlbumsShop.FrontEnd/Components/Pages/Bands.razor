@@ -36,12 +36,12 @@
     private ApiClientService _apiClientService = new ApiClientService();
     private BandWithName[]? _bands = [];
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        GetBands();
+       await GetBands();
     }
 
-    private async void GetBands()
+    private async Task GetBands()
     {
         _bands = await _apiClientService.GetBands();
         StateHasChanged();
@@ -58,7 +58,6 @@
     }
     private async void EditBand(int bandId)
     {
-        var band = await _apiClientService.GetBandDetails(bandId);
-        Navigation.NavigateTo($"bands/editband/{band.Name}/{band.Origin}/{band.YearsActive}/{band.GenreName}");
+        //Navigation.NavigateTo($"bands/editband/{band.Name}/{band.Origin}/{band.YearsActive}/{band.GenreName}"); // alterar o BandDetails para receber o Id
     }
 }

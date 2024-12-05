@@ -1,4 +1,6 @@
-﻿namespace MusicAlbumsShop.Shared.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MusicAlbumsShop.Shared.DTOs
 {
     public class GetGenresResponse
     {
@@ -13,11 +15,14 @@
 
     public class BandDetails
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Origin { get; set; }
+        [Required]
         public string YearsActive { get; set; }
-
         public string GenreName { get; set; }
+        public int GenreId { get; set; } // alterado
 
     }
 

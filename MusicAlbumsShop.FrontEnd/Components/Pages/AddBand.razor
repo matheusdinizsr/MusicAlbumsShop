@@ -1,40 +1,45 @@
-﻿@page "/bands/addband"
+﻿@page "/bands/addband/{BandId:int?}"
 @using MusicAlbumsShop.Shared.DTOs
+@using System.ComponentModel.DataAnnotations
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
-<h3>Add Band</h3>
-<AlertMessage Message="@message"></AlertMessage>
+<h3> MUDAR AQUI Band</h3>
+<AlertMessage Message="@_message"></AlertMessage>
 
 <section>
+    <EditForm Model=@bandModel>
 
-    <div class="row mt-2">
-        <label class="text-muted">Name</label>
-        <InputText class="form-control" @bind-Value=name/>
+        <DataAnnotationsValidator />
+        <ValidationSummary/>
+        <div class="row mt-2">
+            <label class="text-muted">Name</label>
+            <InputText class="form-control" @bind-Value=bandModel.Name />
 
-    </div>
+        </div>
 
-    <div class="row mt-2">
-        <label class="text-muted">Origin</label>
-        <InputText class="form-control" @bind-Value=origin />
-    </div>
+        <div class="row mt-2">
+            <label class="text-muted">Origin</label>
+            <InputText class="form-control" @bind-Value=bandModel.Origin/>
+        </div>
 
-    <div class="row mt-2">
-        <label class="text-muted">Years Active</label>
-        <InputText class="form-control" @bind-Value=yearsActive />
-    </div>
+        <div class="row mt-2">
+            <label class="text-muted">Years Active</label>
+            <InputText class="form-control" @bind-Value=bandModel.YearsActive />
+        </div>
 
-    <div class="row mt-2">
-        <label class="text-muted">Genre</label>
-        <InputSelect class="form-select" @bind-Value=genreId>
-            @foreach (var g in _genresAndIds)
-            {
-                <option value="@g.GenreId">@g.Name</option>
-            }
-        </InputSelect>
-    </div>
+        <div class="row mt-2">
+            <label class="text-muted">Genre</label>
+            <InputSelect class="form-select" @bind-Value=bandModel.GenreId>
+                @foreach (var g in _genresAndIds)
+                {
+                    <option value="@g.GenreId">@g.Name</option>
+                }
+            </InputSelect>
+        </div>
 
-    <button class="btn btn-primary mt-3" @onclick="Add">Add</button>
+        <button class="btn btn-primary mt-3" @onclick="SaveBand">Save</button>
+    </EditForm>
 </section>
 
 
@@ -42,26 +47,39 @@
     protected override async Task OnInitializedAsync()
     {
         _genresAndIds = await _apiClientService.GetGenres();
-        genreId = _genresAndIds[0].GenreId;
+
+        if (BandId != null)
+        {
+            var band = await _apiClientService.GetBandDetails((int)BandId);
+            bandModel.Name = band.Name;
+            bandModel.Origin = band.Origin;
+            bandModel.YearsActive = band.YearsActive;
+            bandModel.GenreId = band.GenreId;
+        }
+        else
+        {
+            bandModel.GenreId = _genresAndIds[0].GenreId;
+        }
     }
+
+    [Parameter]
+    public int? BandId { get; set; }
+
+    BandDetails bandModel = new();
 
     private ApiClientService _apiClientService = new ApiClientService();
     private GenreWithTitle[] _genresAndIds = new GenreWithTitle[] { };
-    private BandDetails band = new BandDetails();
+    string _message = "";
 
-    string name = "";
-    string origin = "";
-    string yearsActive = "";
-    int genreId = 0;
-    string message = "";
 
-    public async Task Add()
+    public async Task SaveBand()
     {
-        await _apiClientService.AddBandAsync(name, origin, yearsActive, genreId);
-        message = "Band created successfully";
-        name = "";
-        origin = "";
-        yearsActive = "";
+        await _apiClientService.AddOrUpdateBandAsync(BandId, bandModel.Name, bandModel.Origin, bandModel.YearsActive, bandModel.GenreId);
+        _message = "Band saved successfully";
+        bandModel.Name = "";
+        bandModel.Origin= "";
+        bandModel.YearsActive = "";
+        bandModel.GenreId = _genresAndIds[0].GenreId;
     }
 
 }

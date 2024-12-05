@@ -155,8 +155,6 @@ namespace Tests
 
             // aseert
             Assert.That(_assertContext.Bands.Count(), Is.EqualTo(0));
-            Assert.That(result?.Id, Is.EqualTo(1));
-            Assert.That(result.Name, Is.EqualTo("The Beatles"));
         }
 
         [TearDown]

@@ -26,9 +26,9 @@ namespace MusicAlbumsShop.FrontEnd
             return result;
         }
 
-        public async Task AddBandAsync(string name, string origin, string yearsActive, int genreId)
+        public async Task AddOrUpdateBandAsync(int? bandId, string name, string origin, string yearsActive, int genreId)
         {
-            await _httpClient.PostAsync($"{_apiAddress}/band?name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
+            await _httpClient.PostAsync($"{_apiAddress}/band?bandId={bandId}&name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
         }
 
         public async Task<GenreWithTitle[]> GetGenres()

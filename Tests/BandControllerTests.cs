@@ -40,7 +40,7 @@ namespace Tests
             _bandServiceMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band);
 
             // act
-            var result = _controller.AddBand(name, origin, yearsActive, genreId);
+            var result = _controller.AddOrUpdateBand(name, origin, yearsActive, genreId);
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -59,7 +59,7 @@ namespace Tests
             _genreServiceMock.Setup(x => x.GetGenreById(genreId)).Returns((Genre?)null);
 
             // act
-            var result = _controller.AddBand("", "", "", genreId);
+            var result = _controller.AddOrUpdateBand("", "", "", genreId);
 
             // assert
             var castResult = result as BadRequestObjectResult;

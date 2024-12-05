@@ -24,14 +24,20 @@ namespace MusicAlbumsShop.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBand(string name, string origin, string yearsActive, int genreId)
+        public IActionResult AddOrUpdateBand(int? bandId, string name, string origin, string yearsActive, int genreId)
         {
             if (_genreService.GetGenreById(genreId) == null)
             {
                 return BadRequest("Genre ID does not exist");
             }
 
-            var band = _bandService.AddOrUpdateBand(name, origin, yearsActive, genreId);
+            var band = _bandService.AddOrUpdateBand(bandId, name, origin, yearsActive, genreId);
+
+            if (band == null)
+            {
+                return BadRequest("Band ID not found");
+            }
+
             var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
 
             return Ok(bandDto);
@@ -54,9 +60,8 @@ namespace MusicAlbumsShop.Controllers
                 return NotFound("Id not found");
             }
 
-            var genre = _genreService.GetGenreById(band.GenreId); //
-
-            if (genre == null)
+            var genre = _genreService.GetGenreById(band.GenreId); 
+                       if (genre == null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -66,7 +71,8 @@ namespace MusicAlbumsShop.Controllers
                 Name = band.Name,
                 Origin = band.Origin,
                 YearsActive = band.YearsActive,
-                GenreName = genre.Name
+                GenreName = genre.Name,
+                GenreId = genre.Id
             };
 
 
@@ -83,9 +89,8 @@ namespace MusicAlbumsShop.Controllers
                 return NotFound("Id not found");
             }
 
-            var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
 
-            return Ok(bandDto);
+            return Ok();
 
         }
 

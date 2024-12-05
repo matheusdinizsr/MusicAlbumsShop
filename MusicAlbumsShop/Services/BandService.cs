@@ -5,9 +5,9 @@ namespace MusicAlbumsShop.Services
 {
     public interface IBandService
     {
-        public Band? AddOrUpdateBand(string name, string origin, string yearsActive, int genreId);
+        public Band? AddOrUpdateBand(int? bandId, string name, string origin, string yearsActive, int genreId);
     }
-    
+
     public class BandService : IBandService
     {
         private IBandStorage _storage;
@@ -19,11 +19,20 @@ namespace MusicAlbumsShop.Services
             _genreService = genreService;
         }
 
-        public Band? AddOrUpdateBand(string name, string origin, string yearsActive, int genreId)
+        public Band? AddOrUpdateBand(int? bandId, string name, string origin, string yearsActive, int genreId)
         {
-            var band = _storage.AddOrUpdateBand(name, origin, yearsActive, genreId);
+            var band = new Band();
+            
+            if (bandId == null)
+            {
+                band = _storage.AddBand(name, origin, yearsActive, genreId);
+                return band;
+            }
 
+            band = _storage.UpdateBand((int)bandId, name, origin, yearsActive, genreId);
             return band;
+
+
         }
     }
 }
