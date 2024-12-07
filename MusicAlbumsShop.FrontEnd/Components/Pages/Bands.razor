@@ -8,7 +8,7 @@
 
 <h1>
     Bands
-    <button class="btn btn-primary" @onclick="NavigateToAddBand"><i class="bi bi-plus-lg"></i></button>
+    <button class="btn btn-primary" @onclick="NavigateToAddEditBand"><i class="bi bi-plus-lg"></i></button>
 </h1>
 
 <section class="p-2 border shadow">
@@ -46,9 +46,9 @@
         _bands = await _apiClientService.GetBands();
         StateHasChanged();
     }
-    private void NavigateToAddBand()
+    private void NavigateToAddEditBand()
     {
-        Navigation.NavigateTo("bands/addband");
+        Navigation.NavigateTo("bands/addeditband");
     }
 
     private void DeleteBand(int bandId)

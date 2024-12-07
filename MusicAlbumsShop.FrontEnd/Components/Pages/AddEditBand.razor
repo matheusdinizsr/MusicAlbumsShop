@@ -1,10 +1,10 @@
-﻿@page "/bands/addband/{BandId:int?}"
+﻿@page "/bands/addeditband/{BandId:int?}"
 @using MusicAlbumsShop.Shared.DTOs
 @using System.ComponentModel.DataAnnotations
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
-<h3> MUDAR AQUI Band</h3>
+<h3>@(_isEdit ? "Edit Band" : "Add Band")</h3>
 <AlertMessage Message="@_message"></AlertMessage>
 
 <section>
@@ -51,10 +51,17 @@
         if (BandId != null)
         {
             var band = await _apiClientService.GetBandDetails((int)BandId);
+            
+            if (band == null)
+            {
+                _errorMessage = "Band not found";
+            }
+
             bandModel.Name = band.Name;
             bandModel.Origin = band.Origin;
             bandModel.YearsActive = band.YearsActive;
             bandModel.GenreId = band.GenreId;
+            _isEdit = true;
         }
         else
         {
@@ -64,6 +71,10 @@
 
     [Parameter]
     public int? BandId { get; set; }
+
+    private string _errorMessage = "";
+
+    private bool _isEdit = false;
 
     BandDetails bandModel = new();
 
@@ -75,7 +86,7 @@
     public async Task SaveBand()
     {
         await _apiClientService.AddOrUpdateBandAsync(BandId, bandModel.Name, bandModel.Origin, bandModel.YearsActive, bandModel.GenreId);
-        _message = "Band saved successfully";
+        _message = _isEdit ? "Band updated successfully" : "Band added successfully";
         bandModel.Name = "";
         bandModel.Origin= "";
         bandModel.YearsActive = "";

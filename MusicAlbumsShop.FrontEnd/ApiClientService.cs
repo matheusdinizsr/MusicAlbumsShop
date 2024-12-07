@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicAlbumsShop.FrontEnd.Components.Pages;
 using MusicAlbumsShop.Shared.DTOs;
+using MusicAlbumsShop.Shared;
+using System.Net;
 
 namespace MusicAlbumsShop.FrontEnd
 {
@@ -19,11 +21,38 @@ namespace MusicAlbumsShop.FrontEnd
             return result;
         }
 
-        public async Task<BandDetails?> GetBandDetails(int bandId)
+        public async Task<ResultWrapper<BandDetails>> GetBandDetails(int bandId)
         {
-            var result = await _httpClient.GetFromJsonAsync<BandDetails>($"{_apiAddress}/band/{bandId}/details");
+            ResultWrapper<BandDetails> wrapper = new();
 
-            return result;
+            wrapper.SetError("Error. Try again.");
+
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<BandDetails>($"{_apiAddress}/band/{bandId}/details");
+
+                if (result != null)
+                {
+                    wrapper.SetSuccess(result);
+                }
+
+            }
+            catch (HttpRequestException e)
+            {
+
+                var code = e.StatusCode;
+
+                if (code == HttpStatusCode.NotFound)
+                {
+                    wrapper.SetError("Band not found.");
+                }
+
+            }
+            catch (Exception e)
+            {
+            }
+
+            return wrapper;
         }
 
         public async Task AddOrUpdateBandAsync(int? bandId, string name, string origin, string yearsActive, int genreId)
