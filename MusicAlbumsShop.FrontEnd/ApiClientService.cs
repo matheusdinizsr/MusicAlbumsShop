@@ -3,6 +3,7 @@ using MusicAlbumsShop.FrontEnd.Components.Pages;
 using MusicAlbumsShop.Shared.DTOs;
 using MusicAlbumsShop.Shared;
 using System.Net;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MusicAlbumsShop.FrontEnd
 {
@@ -14,11 +15,26 @@ namespace MusicAlbumsShop.FrontEnd
         {
             _httpClient = new HttpClient();
         }
-        public async Task<BandWithName[]?> GetBands()
+        public async Task<ResultWrapper<BandWithName[]?>> GetBands()
         {
-            var result = await _httpClient.GetFromJsonAsync<BandWithName[]>($"{_apiAddress}/band/bands");
+            ResultWrapper<BandWithName[]> wrapper = new();
 
-            return result;
+            wrapper.SetError("Error. Try again.");
+
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<BandWithName[]>($"{_apiAddress}/band/bands");
+
+                if (result != null)
+                {
+                    wrapper.SetSuccess(result);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return wrapper;
         }
 
         public async Task<ResultWrapper<BandDetails>> GetBandDetails(int bandId)
@@ -40,31 +56,71 @@ namespace MusicAlbumsShop.FrontEnd
             catch (HttpRequestException e)
             {
 
-                var code = e.StatusCode;
-
-                if (code == HttpStatusCode.NotFound)
+                if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     wrapper.SetError("Band not found.");
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 
             return wrapper;
         }
 
-        public async Task AddOrUpdateBandAsync(int? bandId, string name, string origin, string yearsActive, int genreId)
+        public async Task<ResultWrapper> AddOrUpdateBandAsync(int? bandId, string name, string origin, string yearsActive, int genreId)
         {
-            await _httpClient.PostAsync($"{_apiAddress}/band?bandId={bandId}&name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
+            var result = new HttpResponseMessage();
+            var wrapper = new ResultWrapper();
+
+            try
+            {
+                result = await _httpClient.PostAsync($"{_apiAddress}/band?bandId={bandId}&name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
+                var resultMessage = result.Content.ReadAsStringAsync().ToString();
+
+                wrapper.SetError(resultMessage);
+
+            }
+            catch (Exception)
+            {
+                wrapper.SetError("Error. Try again.");
+            }
+
+            return wrapper;
         }
 
-        public async Task<GenreWithTitle[]> GetGenres()
+        public async Task<ResultWrapper<GenreWithTitle[]?>> GetGenres()
         {
-            var result = await _httpClient.GetFromJsonAsync<GetGenresResponse>($"{_apiAddress}/genre/");
+            ResultWrapper<GenreWithTitle[]> wrapper = new();
+            var result = new GetGenresResponse();
 
-            return result?.GenresAndIds ?? [];
+            wrapper.SetError("Error. Try again.");
+
+            try
+            {
+                result = await _httpClient.GetFromJsonAsync<GetGenresResponse>($"{_apiAddress}/genre/");
+
+                if (result != null)
+                {
+                    wrapper.SetSuccess(result.GenresAndIds);
+                }
+
+            }
+            catch (HttpRequestException e)
+            {
+
+                if (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    wrapper.SetError("There are no genres in the database.");
+                }
+
+            }
+            catch (Exception)
+            {
+            }
+
+            return wrapper;
         }
 
         public async Task DeleteBand(int id)

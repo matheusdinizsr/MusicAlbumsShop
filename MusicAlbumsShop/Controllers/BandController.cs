@@ -28,14 +28,14 @@ namespace MusicAlbumsShop.Controllers
         {
             if (_genreService.GetGenreById(genreId) == null)
             {
-                return BadRequest("Genre ID does not exist");
+                return BadRequest("Genre ID does not exist.");
             }
 
             var band = _bandService.AddOrUpdateBand(bandId, name, origin, yearsActive, genreId);
 
             if (band == null)
             {
-                return BadRequest("Band ID not found");
+                return BadRequest("Band ID not found.");
             }
 
             var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
@@ -75,7 +75,6 @@ namespace MusicAlbumsShop.Controllers
                 GenreId = genre.Id
             };
 
-
             return Ok(dto);
         }
 
@@ -86,9 +85,8 @@ namespace MusicAlbumsShop.Controllers
             
             if (band == null)
             {
-                return NotFound("Id not found");
+                return NotFound("Id not found.");
             }
-
 
             return Ok();
 

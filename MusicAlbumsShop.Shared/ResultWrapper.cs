@@ -9,9 +9,9 @@ namespace MusicAlbumsShop.Shared
 {   
     public class ResultWrapper <T>
     {
-        public T Value { get; private set; }
+        public T? Value { get; private set; }
         public bool IsSuccess { get; private set; }
-        public string ErrorMessage { get; private set; }
+        public string? ErrorMessage { get; private set; }
 
         public void SetSuccess(T value)
         {
@@ -24,6 +24,25 @@ namespace MusicAlbumsShop.Shared
         public void SetError(string message)
         {
             Value = default;
+            IsSuccess = false;
+            ErrorMessage = message;
+        }
+    }
+
+    public class ResultWrapper
+    {
+        public bool IsSuccess { get; private set; }
+        public string? ErrorMessage { get; private set; }
+
+        public void SetSuccess()
+        {
+            IsSuccess = true;
+            ErrorMessage = string.Empty;
+
+        }
+
+        public void SetError(string message)
+        {
             IsSuccess = false;
             ErrorMessage = message;
         }

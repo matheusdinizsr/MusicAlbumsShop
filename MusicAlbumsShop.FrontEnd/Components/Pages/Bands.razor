@@ -38,12 +38,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-       await GetBands();
+        await GetBands();
     }
 
     private async Task GetBands()
     {
-        _bands = await _apiClientService.GetBands();
+        var result = await _apiClientService.GetBands();
+
+        _bands = result.Value;
+
         StateHasChanged();
     }
     private void NavigateToAddEditBand()

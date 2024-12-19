@@ -30,16 +30,17 @@ namespace Tests
         public void When_AddBand_Success()
         {
             // arrange
+            var bandId = 1;
             var name = "";
             var origin = "";
             var yearsActive = "";
             var genreId = 1;
 
-            var band = new Band();
-            _bandStorageMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band).Verifiable();
+            var band = new Band() ;
+            _bandStorageMock.Setup(x => x.AddBand(name, origin, yearsActive, genreId)).Returns(band).Verifiable();
 
             // act
-            var result = _bandService.AddOrUpdateBand(name, origin, yearsActive, genreId);
+            var result = _bandService.AddOrUpdateBand(null, name, origin, yearsActive, genreId);
             
             // assert
             Assert.That(band, Is.EqualTo(result));

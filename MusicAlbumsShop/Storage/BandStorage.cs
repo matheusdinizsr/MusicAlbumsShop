@@ -1,5 +1,7 @@
 ﻿using MusicAlbumsShop.Models;
+using MusicAlbumsShop.Shared;
 using MusicAlbumsShop.Shared.DTOs;
+using static MusicAlbumsShop.Shared.ResultWrapper<MusicAlbumsShop.Models.Band>;
 
 namespace MusicAlbumsShop.Storage
 {

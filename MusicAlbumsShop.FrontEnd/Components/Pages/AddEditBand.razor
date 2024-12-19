@@ -5,32 +5,32 @@
 @attribute [StreamRendering]
 
 <h3>@(_isEdit ? "Edit Band" : "Add Band")</h3>
-<AlertMessage Message="@_message"></AlertMessage>
+<AlertMessage Message="@_message" />
 
 <section>
-    <EditForm Model=@bandModel>
+    <EditForm Model=@_bandModel>
 
         <DataAnnotationsValidator />
-        <ValidationSummary/>
+        <ValidationSummary />
         <div class="row mt-2">
             <label class="text-muted">Name</label>
-            <InputText class="form-control" @bind-Value=bandModel.Name />
+            <InputText class="form-control" @bind-Value=_bandModel.Name />
 
         </div>
 
         <div class="row mt-2">
             <label class="text-muted">Origin</label>
-            <InputText class="form-control" @bind-Value=bandModel.Origin/>
+            <InputText class="form-control" @bind-Value=_bandModel.Origin />
         </div>
 
         <div class="row mt-2">
             <label class="text-muted">Years Active</label>
-            <InputText class="form-control" @bind-Value=bandModel.YearsActive />
+            <InputText class="form-control" @bind-Value=_bandModel.YearsActive />
         </div>
 
         <div class="row mt-2">
             <label class="text-muted">Genre</label>
-            <InputSelect class="form-select" @bind-Value=bandModel.GenreId>
+            <InputSelect class="form-select" @bind-Value=_bandModel.GenreId>
                 @foreach (var g in _genresAndIds)
                 {
                     <option value="@g.GenreId">@g.Name</option>
@@ -46,51 +46,69 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        _genresAndIds = await _apiClientService.GetGenres();
+        var response = await _apiClientService.GetGenres();
+        _genresAndIds = response.Value ?? new GenreWithTitle[] { };
 
         if (BandId != null)
         {
             var band = await _apiClientService.GetBandDetails((int)BandId);
-            
-            if (band == null)
+
+            if (band.ErrorMessage == "Band not found.")
             {
-                _errorMessage = "Band not found";
+                _message = band.ErrorMessage; // alterei
+                _isSuccess = false;
+            }
+            else // adicionei
+            {
+                _bandModel.Name = band.Value.Name;
+                _bandModel.Origin = band.Value.Origin;
+                _bandModel.YearsActive = band.Value.YearsActive;
+                _bandModel.GenreId = band.Value.GenreId;
+                _isSuccess = true;
             }
 
-            bandModel.Name = band.Name;
-            bandModel.Origin = band.Origin;
-            bandModel.YearsActive = band.YearsActive;
-            bandModel.GenreId = band.GenreId;
             _isEdit = true;
+
         }
         else
         {
-            bandModel.GenreId = _genresAndIds[0].GenreId;
+            _bandModel.GenreId = _genresAndIds[0].GenreId;
         }
     }
 
     [Parameter]
     public int? BandId { get; set; }
 
-    private string _errorMessage = "";
-
+    string _message = "";
     private bool _isEdit = false;
-
-    BandDetails bandModel = new();
-
+    private bool _isSuccess = false; // adicionei
+    BandDetails _bandModel = new();
     private ApiClientService _apiClientService = new ApiClientService();
     private GenreWithTitle[] _genresAndIds = new GenreWithTitle[] { };
-    string _message = "";
 
 
     public async Task SaveBand()
     {
-        await _apiClientService.AddOrUpdateBandAsync(BandId, bandModel.Name, bandModel.Origin, bandModel.YearsActive, bandModel.GenreId);
-        _message = _isEdit ? "Band updated successfully" : "Band added successfully";
-        bandModel.Name = "";
-        bandModel.Origin= "";
-        bandModel.YearsActive = "";
-        bandModel.GenreId = _genresAndIds[0].GenreId;
+        var response = await _apiClientService.AddOrUpdateBandAsync(BandId, _bandModel.Name, _bandModel.Origin, _bandModel.YearsActive, _bandModel.GenreId);
+
+        if (response.IsSuccess)
+        {
+            _message = _isEdit ? "Band updated successfully" : "Band added successfully";
+            ResetModel();
+        }
+        else
+        {
+            _message = "Error. Try again.";
+        }
+
+    }
+
+    public void ResetModel()
+    {
+        _bandModel.Name = "";
+        _bandModel.Origin = "";
+        _bandModel.YearsActive = "";
+        _bandModel.GenreId = _genresAndIds[0].GenreId;
     }
 
 }

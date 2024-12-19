@@ -35,7 +35,7 @@ namespace Tests
 
 
             // act
-            var band = _storage.AddOrUpdateBand("Iron Maiden", "England", "1980 - present", 1);
+            var band = _storage.AddBand("Iron Maiden", "England", "1980 - present", 1);
 
             // assert
             Assert.That(_assertContext.Bands.Count(), Is.EqualTo(1));
@@ -56,11 +56,11 @@ namespace Tests
             // arrange
             var rockGenre = new Genre() { Name = "Rock" };
             _arrangeContext.Genres.Add(rockGenre);
-            _arrangeContext.Bands.Add(new Band() { Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre});
+            _arrangeContext.Bands.Add(new Band() {Name = "The Beatles", Origin = "", YearsActive = "", Genre = rockGenre});
             _arrangeContext.SaveChanges();
 
             // act
-            var band = _storage.AddOrUpdateBand("The Beatles", "England", "1940 - 1980", 1);
+            var band = _storage.UpdateBand(1, "The Beatles", "England", "1940 - 1980", 1);
 
             // assert
             Assert.That(_assertContext.Bands.Count(), Is.EqualTo(1));
@@ -82,7 +82,7 @@ namespace Tests
             // arrange
 
             // act
-            var band = _storage.AddOrUpdateBand("", "", "", 99);
+            var band = _storage.AddBand("", "", "", 99);
 
             // assert
             Assert.That(band == null);

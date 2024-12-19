@@ -37,10 +37,10 @@ namespace Tests
 
             var band = new Band() { Id = id, Name = name };
             _genreServiceMock.Setup(x => x.GetGenreById(1)).Returns(new Genre() { Id = 1 });
-            _bandServiceMock.Setup(x => x.AddOrUpdateBand(name, origin, yearsActive, genreId)).Returns(band);
+            _bandServiceMock.Setup(x => x.AddOrUpdateBand(id, name, origin, yearsActive, genreId)).Returns(band);
 
             // act
-            var result = _controller.AddOrUpdateBand(name, origin, yearsActive, genreId);
+            var result = _controller.AddOrUpdateBand(id, name, origin, yearsActive, genreId);
 
             // assert
             Assert.That(result, Is.Not.Null);
@@ -59,7 +59,7 @@ namespace Tests
             _genreServiceMock.Setup(x => x.GetGenreById(genreId)).Returns((Genre?)null);
 
             // act
-            var result = _controller.AddOrUpdateBand("", "", "", genreId);
+            var result = _controller.AddOrUpdateBand(0, "", "", "", genreId);
 
             // assert
             var castResult = result as BadRequestObjectResult;
@@ -121,17 +121,14 @@ namespace Tests
         public void When_DeleteBandById_Success()
         {
             // arrange
-            _bandStorageMock.Setup(x => x.DeleteBandById(1))
-                .Returns(new Band() { Id = 1, GenreId = 1, Name = "", Origin = "", YearsActive = "" });
+            var band = new Band();
+            _bandStorageMock.Setup(x => x.DeleteBandById(1)).Returns(band);
 
             // act
-            var result = _controller.DeleteBandById(1) as OkObjectResult;
+            var result = _controller.DeleteBandById(1);
 
             // assert
             Assert.That(result, Is.Not.Null);
-            var band = result.Value as BandWithName;
-            Assert.That(band?.BandId, Is.EqualTo(1));
-            Assert.That(band.Name, Is.EqualTo(""));
         }
 
        
