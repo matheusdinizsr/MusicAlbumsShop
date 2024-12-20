@@ -110,7 +110,8 @@ namespace Tests
             // assert
             Assert.That(result, Is.Not.Null);
             var band = result.Value as BandDetails; // casting
-            Assert.That(band?.Name, Is.EqualTo("The Beatles"));
+            Assert.That(band?.BandId, Is.EqualTo(1));
+            Assert.That(band.Name, Is.EqualTo("The Beatles"));
             Assert.That(band.GenreName, Is.EqualTo("Rock"));
             Assert.That(band.Origin, Is.EqualTo("England"));
             Assert.That(band.YearsActive, Is.EqualTo("1950 - 1970"));

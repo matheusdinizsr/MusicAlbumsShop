@@ -77,9 +77,12 @@ namespace MusicAlbumsShop.FrontEnd
             try
             {
                 result = await _httpClient.PostAsync($"{_apiAddress}/band?bandId={bandId}&name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
-                var resultMessage = result.Content.ReadAsStringAsync().ToString();
+                if (result != null)
+                {
+                    var resultMessage = result.Content.ReadAsStringAsync().ToString();
 
-                wrapper.SetError(resultMessage);
+                    wrapper.SetError(resultMessage);
+                }
 
             }
             catch (Exception)
@@ -123,9 +126,30 @@ namespace MusicAlbumsShop.FrontEnd
             return wrapper;
         }
 
-        public async Task DeleteBand(int id)
+        public async Task<ResultWrapper> DeleteBand(int id)
         {
-            var delete = await _httpClient.DeleteAsync($"{_apiAddress}/band?id={id}");
+            var result = new HttpResponseMessage();
+            var wrapper = new ResultWrapper();
+
+            wrapper.SetError("Error. Try again.");
+
+            try
+            {
+                result = await _httpClient.DeleteAsync($"{_apiAddress}/band?id={id}");
+
+                if (result != null)
+                {
+                    var resultMessage = result.Content.ReadAsStringAsync().ToString();
+
+                    wrapper.SetError(resultMessage);
+                }
+
+            }
+            catch (Exception)
+            {
+            }
+
+            return wrapper;
         }
     }
 }

@@ -68,6 +68,7 @@ namespace MusicAlbumsShop.Controllers
 
             var dto = new BandDetails()
             {
+                BandId = band.Id,
                 Name = band.Name,
                 Origin = band.Origin,
                 YearsActive = band.YearsActive,

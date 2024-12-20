@@ -16,13 +16,15 @@ namespace MusicAlbumsShop.Shared.DTOs
     public class BandDetails
     {
         [Required]
+        public int BandId { get; set;}
+        [Required]
         public string Name { get; set; }
         [Required]
         public string Origin { get; set; }
         [Required]
         public string YearsActive { get; set; }
         public string GenreName { get; set; }
-        public int GenreId { get; set; } // alterado
+        public int GenreId { get; set; }
 
     }
 

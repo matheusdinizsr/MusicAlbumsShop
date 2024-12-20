@@ -54,13 +54,17 @@
         Navigation.NavigateTo("bands/addeditband");
     }
 
-    private void DeleteBand(int bandId)
+    private async void DeleteBand(int bandId)
     {
-        _apiClientService.DeleteBand(bandId);
+        await _apiClientService.DeleteBand(bandId);
         _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
     }
+
     private async void EditBand(int bandId)
     {
-        //Navigation.NavigateTo($"bands/editband/{band.Name}/{band.Origin}/{band.YearsActive}/{band.GenreName}"); // alterar o BandDetails para receber o Id
+        var result = await _apiClientService.GetBandDetails(bandId);
+        var band = result.Value;
+
+        Navigation.NavigateTo($"bands/addeditband/{band.BandId}");
     }
 }
