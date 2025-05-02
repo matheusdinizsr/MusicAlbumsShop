@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Bands</PageTitle>
 
@@ -16,7 +17,7 @@
     {
         <div class="row">
             <div class="col-auto align-middle">
-                <button class="btn btn-primary btn-sm" @onclick=@(() => EditBand(band.BandId)) ><i class="bi bi-pen"></i></button>
+                <button class="btn btn-primary btn-sm" @onclick=@(() => EditBand(band.BandId))><i class="bi bi-pen"></i></button>
                 <button class="btn btn-primary btn-sm" @onclick="@(() => DeleteBand(band.BandId))"><i class="bi bi-trash"></i></button>
             </div>
             <div class="col-auto align-middle">
@@ -26,15 +27,33 @@
                 <span class="align-middle">@band.Name</span>
             </div>
         </div>
-
     }
 </section>
 
+@* <button type="button" class="btn btn-primary" @onclick="TesteModal">Teste Modal</button> *@
+
+<script>
+    window.showModal = () => {
+        const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+        myModal.show();
+    };
+
+    window.hideModal = () => {
+        const myModal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+        myModal?.hide();
+    };
+</script>
+
+
+
 
 @code {
+    [Inject]
+    private IModalService PageModals { get; set; }
 
     private ApiClientService _apiClientService = new ApiClientService();
     private BandWithName[]? _bands = [];
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,16 +68,52 @@
 
         StateHasChanged();
     }
+
     private void NavigateToAddEditBand()
     {
         Navigation.NavigateTo("bands/addeditband");
     }
 
-    private async void DeleteBand(int bandId)
+    // private async void DeleteBand(int bandId)
+    // {
+    //     // var confirmationResponse = await _popUpService.YesNoConfirmation("Are you sure?");
+
+
+    //     var band = await _apiClientService.GetBandDetails(bandId);
+    //     PageModals.NewModal("Delete band", $"Are you sure you want do delete {band.Value.Name}?");
+    //     StateHasChanged();
+    //     await JS.InvokeVoidAsync("showModal");
+
+
+
+    //     if (confirmationResponse)
+    //     {
+    //         await _apiClientService.DeleteBand(bandId);
+    //         _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
+    //         StateHasChanged();
+    //     }
+
+
+
+    // }
+
+    private async Task DeleteBand(int bandId)
     {
-        await _apiClientService.DeleteBand(bandId);
-        _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
+        var band = await _apiClientService.GetBandDetails(bandId);
+        PageModals.NewModal("Delete band", $"Are you sure you want to delete {band.Value.Name}?");
+        StateHasChanged();
+        await JS.InvokeVoidAsync("showModal"); // Exibe o modal via JS
+
+        var confirmation = await PageModals.WaitForConfirmationAsync(); // Aguarda resposta
+
+        if (confirmation)
+        {
+            await _apiClientService.DeleteBand(bandId);
+            _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
+            StateHasChanged();
+        }
     }
+
 
     private async void EditBand(int bandId)
     {
@@ -67,4 +122,11 @@
 
         Navigation.NavigateTo($"bands/addeditband/{band.BandId}");
     }
+
+    // public void TesteModal()
+    // {
+    //     PageModals.NewModal("Título novo", "Texto novo");
+    //     StateHasChanged();
+    //     JS.InvokeVoidAsync("showModal");
+    // }
 }

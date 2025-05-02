@@ -5,7 +5,6 @@
 @attribute [StreamRendering]
 
 <h3>@(_isEdit ? "Edit Band" : "Add Band")</h3>
-<AlertMessage Message="@_message" />
 
 <section>
     <EditForm Model=@_bandModel>
@@ -15,7 +14,6 @@
         <div class="row mt-2">
             <label class="text-muted">Name</label>
             <InputText class="form-control" @bind-Value=_bandModel.Name />
-
         </div>
 
         <div class="row mt-2">
@@ -42,8 +40,11 @@
     </EditForm>
 </section>
 
-
 @code {
+
+    [Inject]
+    private IAlertService PageAlerts { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var response = await _apiClientService.GetGenres();
@@ -55,10 +56,10 @@
 
             if (band.ErrorMessage == "Band not found.")
             {
-                _message = band.ErrorMessage; // alterei
                 _isSuccess = false;
+                PageAlerts.NewAlert(band.ErrorMessage, false, 3, EMessageType.Error);
             }
-            else // adicionei
+            else
             {
                 _bandModel.Name = band.Value.Name;
                 _bandModel.Origin = band.Value.Origin;
@@ -79,9 +80,8 @@
     [Parameter]
     public int? BandId { get; set; }
 
-    string _message = "";
     private bool _isEdit = false;
-    private bool _isSuccess = false; // adicionei
+    private bool _isSuccess = false;
     BandDetails _bandModel = new();
     private ApiClientService _apiClientService = new ApiClientService();
     private GenreWithTitle[] _genresAndIds = new GenreWithTitle[] { };
@@ -93,12 +93,13 @@
 
         if (response.IsSuccess)
         {
-            _message = _isEdit ? "Band updated successfully" : "Band added successfully";
+            PageAlerts.NewAlert(_isEdit ? "Band updated successfully!" : "Band saved successfully!", false, 5, EMessageType.Success);
+
             ResetModel();
         }
         else
         {
-            _message = "Error. Try again.";
+            PageAlerts.NewAlert("Error. Try again.", true, EMessageType.Error);
         }
 
     }

@@ -77,11 +77,11 @@ namespace MusicAlbumsShop.FrontEnd
             try
             {
                 result = await _httpClient.PostAsync($"{_apiAddress}/band?bandId={bandId}&name={name}&origin={origin}&yearsActive={yearsActive}&genreId={genreId}", null);
-                if (result != null)
+                if (result.IsSuccessStatusCode)
                 {
-                    var resultMessage = result.Content.ReadAsStringAsync().ToString();
+                    //var resultMessage = result.Content.ReadAsStringAsync().ToString();
 
-                    wrapper.SetError(resultMessage);
+                    wrapper.SetSuccess();
                 }
 
             }

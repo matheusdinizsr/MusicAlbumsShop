@@ -11,8 +11,12 @@ namespace MusicAlbumsShop.FrontEnd
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            
+            builder.Services.AddScoped<IAlertService, AlertService>();
+            builder.Services.AddScoped<IModalService, ModalService>();
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

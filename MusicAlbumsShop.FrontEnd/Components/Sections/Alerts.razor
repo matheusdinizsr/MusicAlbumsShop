@@ -1,0 +1,83 @@
+﻿@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<section class="container">
+
+    @foreach (var alert in _alerts)
+    {
+        var type = "";
+
+        switch (alert.Type)
+        {
+            case EMessageType.Success:
+                type = "success";
+                break;
+            case EMessageType.Warning:
+                type = "warning";
+                break;
+            case EMessageType.Error:
+                type = "danger";
+                break;
+        }
+
+        <div class="alert alert-@type" role="alert">
+            @alert.Text
+            @if (alert.IsDismissible)
+            {
+                <button class="btn btndismiss" @onclick="x => Dismiss(alert)"><i class="bi bi-x-lg"></i></button>
+            }
+        </div>
+    }
+
+</section>
+
+
+@code {
+
+    [Inject]
+    public IAlertService PageAlerts { get; set; }
+    private Alert[] _alerts = new Alert[] { };
+
+    protected override void OnInitialized()
+    {
+        PageAlerts.OnAlertsChanged += HandleAlertsChanged;
+    }
+
+    private async void HandleAlertsChanged()
+    {
+        _alerts = PageAlerts.GetAlerts();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async void Dismiss(Alert alert)
+    {
+        PageAlerts.DismissByButton(alert.Id);
+    }
+
+    public void Dispose()
+    {
+        PageAlerts.OnAlertsChanged -= HandleAlertsChanged;
+    }
+
+
+}
+
+<style>
+    .container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        width: auto;
+    }
+
+    .alert {
+        width: fit-content;
+        padding: 5px;
+    }
+
+    .btndismiss:hover {
+        opacity: 0.5;
+    }
+}
+</style>

@@ -25,4 +25,8 @@
     <ProjectReference Include="..\MusicAlbumsShop.Shared\MusicAlbumsShop.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
