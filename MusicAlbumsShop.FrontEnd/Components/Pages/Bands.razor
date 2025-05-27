@@ -34,13 +34,13 @@
 
 <script>
     window.showModal = () => {
-        const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
-        myModal.show();
+    const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+    myModal.show();
     };
 
     window.hideModal = () => {
-        const myModal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
-        myModal?.hide();
+    const myModal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+    myModal?.hide();
     };
 </script>
 
@@ -49,7 +49,7 @@
 
 @code {
     [Inject]
-    private IModalService PageModals { get; set; }
+    private IModalService PageModals { get; set; } // Alterar o nome
 
     private ApiClientService _apiClientService = new ApiClientService();
     private BandWithName[]? _bands = [];
@@ -74,37 +74,12 @@
         Navigation.NavigateTo("bands/addeditband");
     }
 
-    // private async void DeleteBand(int bandId)
-    // {
-    //     // var confirmationResponse = await _popUpService.YesNoConfirmation("Are you sure?");
-
-
-    //     var band = await _apiClientService.GetBandDetails(bandId);
-    //     PageModals.NewModal("Delete band", $"Are you sure you want do delete {band.Value.Name}?");
-    //     StateHasChanged();
-    //     await JS.InvokeVoidAsync("showModal");
-
-
-
-    //     if (confirmationResponse)
-    //     {
-    //         await _apiClientService.DeleteBand(bandId);
-    //         _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
-    //         StateHasChanged();
-    //     }
-
-
-
-    // }
 
     private async Task DeleteBand(int bandId)
     {
         var band = await _apiClientService.GetBandDetails(bandId);
-        PageModals.NewModal("Delete band", $"Are you sure you want to delete {band.Value.Name}?");
-        StateHasChanged();
-        await JS.InvokeVoidAsync("showModal"); // Exibe o modal via JS
 
-        var confirmation = await PageModals.WaitForConfirmationAsync(); // Aguarda resposta
+        var confirmation = await PageModals.WaitForConfirmationAsync("Delete band", $"Are you sure you want to delete {band?.Value?.Name}?", "Delete", "No");
 
         if (confirmation)
         {
@@ -112,6 +87,15 @@
             _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
             StateHasChanged();
         }
+
+
+
+
+
+
+        //var size = await PageModals.ShowModalWithOptions("Size", "Choose the size", ["S", "M", "L", "XL", "XXL"]);
+
+
     }
 
 
@@ -123,10 +107,4 @@
         Navigation.NavigateTo($"bands/addeditband/{band.BandId}");
     }
 
-    // public void TesteModal()
-    // {
-    //     PageModals.NewModal("Título novo", "Texto novo");
-    //     StateHasChanged();
-    //     JS.InvokeVoidAsync("showModal");
-    // }
 }

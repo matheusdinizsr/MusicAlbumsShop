@@ -12,10 +12,15 @@
                 @PageModals.Text
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(false))>No</button>
-                <button type="button" class="btn btn-primary" @onclick=@(() => Clicked(true))>Delete</button>
+                <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(false))>@PageModals.ButtonFalse</button>
+                <button type="button" class="btn btn-primary" @onclick=@(() => Clicked(true))>@PageModals.ButtonTrue</button>
             </div>
-
+            @foreach (var button in PageModals.ButtonsArray)
+            {
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(false))>@button</button>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -26,15 +31,36 @@
 @code {
     [Inject]
     public IModalService PageModals { get; set; }
-    
-    [Inject] 
+
+    [Inject]
     IJSRuntime JS { get; set; }
+
+    protected override void OnInitialized()
+    {
+        PageModals.OnModalChanged += OnModalChanged;
+    }
+
+    private async void OnModalChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+
+        if (PageModals.IsVisible)
+        {
+            await JS.InvokeVoidAsync("showModal");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("hideModal");
+        }
+    }
 
 
     public async void Clicked(bool confirmation)
     {
         PageModals.SetConfirmation(confirmation);
-        await JS.InvokeVoidAsync("hideModal");
     }
+
+
+
 
 }
