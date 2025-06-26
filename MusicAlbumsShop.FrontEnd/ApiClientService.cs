@@ -136,6 +136,7 @@ namespace MusicAlbumsShop.FrontEnd
             try
             {
                 result = await _httpClient.DeleteAsync($"{_apiAddress}/band?id={id}");
+                await Task.Delay(2000);
 
                 if (result != null)
                 {
@@ -144,6 +145,28 @@ namespace MusicAlbumsShop.FrontEnd
                     wrapper.SetError(resultMessage);
                 }
 
+            }
+            catch (Exception)
+            {
+            }
+
+            return wrapper;
+        }
+
+        public async Task<ResultWrapper<AlbumWithTitle[]?>> GetAlbums()
+        {
+            ResultWrapper<AlbumWithTitle[]> wrapper = new();
+
+            wrapper.SetError("Error. Try again.");
+
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<AlbumWithTitle[]>($"{_apiAddress}/album");
+
+                if (result != null)
+                {
+                    wrapper.SetSuccess(result);
+                }
             }
             catch (Exception)
             {

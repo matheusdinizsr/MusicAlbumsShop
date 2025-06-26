@@ -5,22 +5,19 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">@PageModals.Title</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">@ModalService.Title</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @PageModals.Text
+                @ModalService.Text
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(false))>@PageModals.ButtonFalse</button>
-                <button type="button" class="btn btn-primary" @onclick=@(() => Clicked(true))>@PageModals.ButtonTrue</button>
+                @foreach (var button in ModalService.ButtonsArray)
+                {
+                    <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(button))>@button</button>
+                }
             </div>
-            @foreach (var button in PageModals.ButtonsArray)
-            {
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick=@(() => Clicked(false))>@button</button>
-                </div>
-            }
+
         </div>
     </div>
 </div>
@@ -30,21 +27,21 @@
 
 @code {
     [Inject]
-    public IModalService PageModals { get; set; }
+    public IModalService ModalService { get; set; }
 
     [Inject]
     IJSRuntime JS { get; set; }
 
     protected override void OnInitialized()
     {
-        PageModals.OnModalChanged += OnModalChanged;
+        ModalService.OnModalChanged += OnModalChanged;
     }
 
     private async void OnModalChanged()
     {
         await InvokeAsync(StateHasChanged);
 
-        if (PageModals.IsVisible)
+        if (ModalService.IsVisible)
         {
             await JS.InvokeVoidAsync("showModal");
         }
@@ -55,9 +52,9 @@
     }
 
 
-    public async void Clicked(bool confirmation)
+    public void Clicked(string button)
     {
-        PageModals.SetConfirmation(confirmation);
+       ModalService.SetPressedButton(button);
     }
 
 

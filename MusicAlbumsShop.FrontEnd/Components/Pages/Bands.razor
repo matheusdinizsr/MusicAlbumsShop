@@ -30,8 +30,6 @@
     }
 </section>
 
-@* <button type="button" class="btn btn-primary" @onclick="TesteModal">Teste Modal</button> *@
-
 <script>
     window.showModal = () => {
     const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
@@ -45,11 +43,11 @@
 </script>
 
 
-
-
 @code {
     [Inject]
-    private IModalService PageModals { get; set; } // Alterar o nome
+    private IModalService ModalService { get; set; } 
+    [Inject]
+    private LoadingScreenService LoadingScreenService { get; set; }
 
     private ApiClientService _apiClientService = new ApiClientService();
     private BandWithName[]? _bands = [];
@@ -57,7 +55,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ModalService.OnModalChanged += OnModalChanged;
         await GetBands();
+    }
+
+    private async void OnModalChanged()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task GetBands()
@@ -79,23 +83,15 @@
     {
         var band = await _apiClientService.GetBandDetails(bandId);
 
-        var confirmation = await PageModals.WaitForConfirmationAsync("Delete band", $"Are you sure you want to delete {band?.Value?.Name}?", "Delete", "No");
+        var confirmation = await ModalService.ShowConfirmation("Delete band", $"Are you sure you want to delete {band?.Value?.Name}?", "Delete", "No");
 
         if (confirmation)
         {
+            //LoadingScreenService.Show();
             await _apiClientService.DeleteBand(bandId);
             _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
             StateHasChanged();
         }
-
-
-
-
-
-
-        //var size = await PageModals.ShowModalWithOptions("Size", "Choose the size", ["S", "M", "L", "XL", "XXL"]);
-
-
     }
 
 
@@ -106,5 +102,4 @@
 
         Navigation.NavigateTo($"bands/addeditband/{band.BandId}");
     }
-
 }
