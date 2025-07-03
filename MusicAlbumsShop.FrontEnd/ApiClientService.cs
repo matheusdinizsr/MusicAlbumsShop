@@ -136,7 +136,6 @@ namespace MusicAlbumsShop.FrontEnd
             try
             {
                 result = await _httpClient.DeleteAsync($"{_apiAddress}/band?id={id}");
-                await Task.Delay(2000);
 
                 if (result != null)
                 {
