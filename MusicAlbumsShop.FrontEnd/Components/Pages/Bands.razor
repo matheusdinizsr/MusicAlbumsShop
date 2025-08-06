@@ -17,27 +17,41 @@
     <div class="col-auto align-middle">
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Organize
+                @_sortFilter
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Name ↓</a></li>
-                <li><a class="dropdown-item" href="#">Name ↑</a></li>
-                <li><a class="dropdown-item" href="#">ID ↓</a></li>
-                <li><a class="dropdown-item" href="#">ID ↑</a></li>
+                <li><a class="dropdown-item" @onclick="@(() => {_sortFilter = SortOption.Name; Sort();})">Name</a></li>
+                <li><a class="dropdown-item" @onclick="@(() => {_sortFilter = SortOption.ID; Sort();})">ID</a></li>
+                <li><a class="dropdown-item" @onclick="@(() => {_sortFilter = SortOption.Genre; Sort();})">Genre</a></li>
             </ul>
             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Filter
+                @_orderFilter
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Rock</a></li>
+                <li><a class="dropdown-item" @onclick="@(() => {_orderFilter = OrderOption.Ascending; Sort();})">Ascending ↑</a></li>
+                <li><a class="dropdown-item" @onclick="@(() => {_orderFilter = OrderOption.Descending; Sort();})">Descending ↓</a></li>
             </ul>
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @_genreFilter
+            </button>
+            <ul class="dropdown-menu">
+
+                <li><a class="dropdown-item" @onclick="@(() => FilterByGenre("All"))">All</a></li>
+
+                @foreach (var genre in _genres)
+                {
+                    <li><a class="dropdown-item" @onclick="@(() => FilterByGenre(genre))">@genre</a></li>
+                }
+
+            </ul>
+            <input type="search" @bind="_searchFilter" @bind:event="oninput" placeholder="Search..." />
         </div>
     </div>
 </div>
+
 <section class="p-2 border shadow">
 
-
-    @foreach (var band in _bands)
+    @foreach (var band in _genreFilter == "All" ? FilteredBands : FilteredBands.Where(x => x.GenreName == _genreFilter))
     {
         <div class="row">
             <div class="col-auto align-middle">
@@ -47,11 +61,11 @@
             <div class="col-auto align-middle">
                 <span class="align-middle">@band.BandId</span>
             </div>
-            <div class="col align-middle">
+            <div class="col-auto align-middle">
                 <span class="align-middle">@band.Name</span>
             </div>
-            <div class="col align-middle">
-                <span class="align-middle">@band.</span>
+            <div class="col-auto align-middle">
+                <span class="align-middle">@band.GenreName</span>
             </div>
         </div>
     }
@@ -77,13 +91,35 @@
     private LoadingScreenService LoadingScreenService { get; set; }
 
     private ApiClientService _apiClientService = new ApiClientService();
-    private BandDetails[]? _bands = [];
+    private BandWithNameAndGenre[]? _bands = [];
+    private string[]? _genres = [];
+
+    private string? _searchFilter;
+    private string? _genreFilter = "All";
+    private SortOption _sortFilter = SortOption.Name;
+    private OrderOption _orderFilter = OrderOption.Ascending;
+
+    IQueryable<BandWithNameAndGenre> FilteredBands
+    {
+        get
+        {
+            var result = _bands.AsQueryable();
+            if (!string.IsNullOrEmpty(_searchFilter))
+            {
+                result = result.Where(b => b.Name.Contains(_searchFilter, StringComparison.CurrentCultureIgnoreCase) || b.GenreName.Contains(_searchFilter, StringComparison.CurrentCultureIgnoreCase));
+            }
+            return result;
+        }
+    }
+
+
 
 
     protected override async Task OnInitializedAsync()
     {
         ModalService.OnModalChanged += OnModalChanged;
         await GetBands();
+
     }
 
     private async void OnModalChanged()
@@ -91,14 +127,29 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task GetBands()
+    private async Task GetBands(string genre = "")
     {
         var result = await _apiClientService.GetBands();
 
         _bands = result.Value;
 
-        StateHasChanged();
+        UpdateState();
     }
+
+    private void GetGenresFromBands()
+    {
+        if (_bands != null)
+        {
+            _genres = _bands
+                .Where(b => !string.IsNullOrWhiteSpace(b.GenreName))
+                .Select(b => b.GenreName)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToArray();
+        }
+
+    }
+
 
     private void NavigateToAddEditBand()
     {
@@ -117,7 +168,7 @@
             LoadingScreenService.ShowAndHide();
             await _apiClientService.DeleteBand(bandId);
             _bands = _bands?.Where(b => b.BandId != bandId).ToArray();
-            StateHasChanged();
+            UpdateState();
         }
     }
 
@@ -129,4 +180,48 @@
 
         Navigation.NavigateTo($"bands/addeditband/{band.BandId}");
     }
+
+
+    private void FilterByGenre(string genre)
+    {
+        _genreFilter = genre;
+    }
+
+    private void Sort()
+    {
+        Func<BandWithNameAndGenre, object> keySelector = _sortFilter switch
+        {
+            SortOption.Name => x => x.Name,
+            SortOption.ID => x => x.BandId,
+            SortOption.Genre => x => x.GenreName,
+            _ => x => x.Name
+        };
+
+        _bands = _orderFilter == OrderOption.Ascending
+            ? _bands.OrderBy(keySelector).ToArray()
+            : _bands.OrderByDescending(keySelector).ToArray();
+
+    }
+
+    private void UpdateState()
+    {
+        GetGenresFromBands();
+        StateHasChanged();
+    }
+
+    public enum SortOption
+    {
+        Name,
+        ID,
+        Genre
+    }
+
+    public enum OrderOption
+    {
+        Ascending,
+        Descending
+    }
+
+
 }
+

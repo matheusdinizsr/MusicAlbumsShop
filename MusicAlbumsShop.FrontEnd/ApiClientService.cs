@@ -15,15 +15,15 @@ namespace MusicAlbumsShop.FrontEnd
         {
             _httpClient = new HttpClient();
         }
-        public async Task<ResultWrapper<BandWithName[]?>> GetBands()
+        public async Task<ResultWrapper<BandWithNameAndGenre[]?>> GetBands()
         {
-            ResultWrapper<BandWithName[]> wrapper = new();
+            ResultWrapper<BandWithNameAndGenre[]> wrapper = new();
 
             wrapper.SetError("Error. Try again.");
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<BandWithName[]>($"{_apiAddress}/band/bands");
+                var result = await _httpClient.GetFromJsonAsync<BandWithNameAndGenre[]>($"{_apiAddress}/band/bands");
 
                 if (result != null)
                 {

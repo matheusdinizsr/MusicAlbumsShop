@@ -7,10 +7,12 @@ namespace MusicAlbumsShop.Shared.DTOs
         public GenreWithTitle[] GenresAndIds { get; set; }
     }
 
-    public class BandWithName
+    public class BandWithNameAndGenre
     {
         public int BandId { get; set; }
         public string Name { get; set; }
+        public string GenreName { get; set; }
+
     }
 
     public class BandDetails

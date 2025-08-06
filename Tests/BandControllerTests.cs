@@ -45,7 +45,7 @@ namespace Tests
             // assert
             Assert.That(result, Is.Not.Null);
             var castResult = result as OkObjectResult;
-            var bandCast = castResult?.Value as BandWithName;
+            var bandCast = castResult?.Value as BandWithNameAndGenre;
             Assert.That(bandCast?.BandId, Is.EqualTo(1));
             Assert.That(bandCast.Name, Is.EqualTo(""));
         }
@@ -71,7 +71,7 @@ namespace Tests
         public void When_GetBands_Success()
         {
             // arrange
-            _bandStorageMock.Setup(x => x.GetBands()).Returns(new BandWithName[] {new BandWithName() {BandId = 1, Name = "The Beatles"} });
+            _bandStorageMock.Setup(x => x.GetBands()).Returns(new BandWithNameAndGenre[] {new BandWithNameAndGenre() {BandId = 1, Name = "The Beatles"} });
 
             // act
             var result = _controller.GetBands();

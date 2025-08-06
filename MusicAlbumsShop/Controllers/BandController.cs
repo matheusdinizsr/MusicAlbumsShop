@@ -38,13 +38,13 @@ namespace MusicAlbumsShop.Controllers
                 return BadRequest("Band ID not found.");
             }
 
-            var bandDto = new BandWithName() { Name = band.Name, BandId = band.Id };
+            var bandDto = new BandWithNameAndGenre() { Name = band.Name, BandId = band.Id, GenreName = band.Genre.Name };
 
             return Ok(bandDto);
         }
 
         [HttpGet("bands")]
-        public BandWithName[] GetBands()
+        public BandWithNameAndGenre[] GetBands()
         {
             var array = _bandStorage.GetBands();
             return array;

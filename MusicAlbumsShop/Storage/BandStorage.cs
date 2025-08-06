@@ -9,7 +9,7 @@ namespace MusicAlbumsShop.Storage
     {
         public Band? AddBand(string name, string origin, string yearsActive, int genreId);
         public Band? UpdateBand(int bandId, string name, string origin, string yearsActive, int genreId);
-        public BandWithName[] GetBands();
+        public BandWithNameAndGenre[] GetBands();
         public Band? GetBandById(int id);
         public Band? DeleteBandById(int id);
     }
@@ -59,9 +59,9 @@ namespace MusicAlbumsShop.Storage
 
         }
 
-        public BandWithName[] GetBands()
+        public BandWithNameAndGenre[] GetBands()
         {
-            var result = _context.Bands.Select(x => new BandWithName() { BandId = x.Id, Name = x.Name }).ToArray();
+            var result = _context.Bands.Select(x => new BandWithNameAndGenre() { BandId = x.Id, Name = x.Name, GenreName = x.Genre.Name }).ToArray();
             return result;
         }
 
