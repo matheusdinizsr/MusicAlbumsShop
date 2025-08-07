@@ -46,7 +46,7 @@ namespace Tests
             var resultCast = result as OkObjectResult;
             var albumCast = resultCast?.Value as AlbumWithTitle;
             Assert.That(albumCast?.AlbumId, Is.EqualTo(album.Id));
-            Assert.That(albumCast.Title, Is.EqualTo(album.Title));
+            Assert.That(albumCast.AlbumTitle, Is.EqualTo(album.Title));
             _albumServiceMock.Verify();
         }
 

@@ -11,6 +11,7 @@ namespace MusicAlbumsShop.Storage
         public Album? AddOrUpdateAlbum(string title, DateTime releaseDate, int bandId);
         public AlbumWithTitle[]? GetAlbumsFromABand(int bandId);
         public Album? GetAlbumById(int albumId);
+        public AlbumWithTitle[]? GetAlbums();
     }
 
     public class AlbumStorage : IAlbumStorage
@@ -49,6 +50,12 @@ namespace MusicAlbumsShop.Storage
 
         }
 
+        public AlbumWithTitle[]? GetAlbums()
+        {
+            var result = _context.Albums.Select(x => new AlbumWithTitle() { AlbumId = x.Id, AlbumTitle = x.Title, BandName = x.Band.Name }).ToArray();
+            return result;
+        }
+
         public Album? GetAlbumById(int albumId)
         {
             var found = _context.Albums.Include(a => a.Band).FirstOrDefault(a => a.Id == albumId);
@@ -67,7 +74,7 @@ namespace MusicAlbumsShop.Storage
 
             var albums = _context.Albums
                 .Where(a => a.BandId == band.Id)
-                .Select(a => new AlbumWithTitle { AlbumId = a.Id, Title = a.Title, BandName = band.Name })
+                .Select(a => new AlbumWithTitle { AlbumId = a.Id, AlbumTitle = a.Title, BandName = band.Name })
                 .ToArray();
 
             return albums;

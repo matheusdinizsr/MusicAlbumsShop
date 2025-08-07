@@ -35,12 +35,25 @@ namespace MusicAlbumsShop.Controllers
                 return BadRequest("Band does not exist");
             }
 
-            var albumDto = new AlbumWithTitle() { AlbumId = album.Id, BandName = album.Band.Name, Title = title };
+            var albumDto = new AlbumWithTitle() { AlbumId = album.Id, BandName = album.Band.Name, AlbumTitle = title };
 
             return Ok(albumDto);
         }
 
         [HttpGet]
+        public IActionResult GetAlbums()
+        {
+            var albums = _albumStorage.GetAlbums();
+
+            if (albums == null)
+            {
+                return NotFound("Albums not found.");
+            }
+
+            return Ok(albums);
+        }
+
+        [HttpGet("{id}/albums")]
         public IActionResult GetAlbumsFromABand(int bandId)
         {
             var albums = _albumStorage.GetAlbumsFromABand(bandId);
@@ -52,6 +65,7 @@ namespace MusicAlbumsShop.Controllers
 
             return Ok(albums);
         }
+
 
 
         [HttpGet("{id}/details")]

@@ -1,16 +1,94 @@
 ﻿@page "/albums"
+@using MusicAlbumsShop.Shared.DTOs
 @rendermode InteractiveServer
+@attribute [StreamRendering]
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
-<PageTitle>Albums</PageTitle>
-
-<h1>Albums</h1>
-
-@*
- <h1>
+<h1>
     Albums
     <button class="btn btn-primary" @onclick="NavigateToAddEditAlbum"><i class="bi bi-plus-lg"></i></button>
-</h1> *@
+</h1>
+
+<DxGrid>
+
+</DxGrid>
+
+
+
+
+<section class="p-2 border shadow">
+
+    
+
+    @foreach (var album in _albums)
+    {
+        <div class="row">
+            <div class="col-auto align-middle">
+                <button class="btn btn-primary btn-sm" @onclick="@(() => EditAlbum(album.AlbumId))"><i class="bi bi-pen"></i></button>
+                <button class="btn btn-primary btn-sm" @onclick="@(() => DeleteAlbum(album.AlbumId))"><i class="bi bi-trash"></i></button> 
+            </div>
+            <div class="col-auto align-content-middle">
+                <span class="align-middle">@album.AlbumId</span>
+            </div>
+            <div class="col-auto align-content-middle">
+                <span class="align-middle">@album.AlbumTitle</span>
+            </div>
+            <div class="col-auto align-content-middle">
+                <span class="align-middle">@album.BandName</span>
+            </div>
+        </div>
+    }
+</section>
+
 
 @code {
-    
+    private AlbumWithTitle[]? _albums = [];
+    private ApiClientService _apiClientService = new ApiClientService();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //ModalService.OnModalChanged += OnModalChanged;
+        await GetAlbums();
+
+    }
+
+    private void NavigateToAddEditAlbum()
+    {
+        Navigation.NavigateTo("bands/addeditband");
+    }
+
+    private async Task GetAlbums()
+    {
+        var result = await _apiClientService.GetAlbums();
+
+        _albums = result.Value;
+
+        StateHasChanged();
+    }
+
+    private async Task DeleteAlbum(int albumId)
+    {
+        // var album = await _apiClientService.GetBandDetails(albumId);
+
+        // var confirmation = await ModalService.ShowConfirmation("Delete band", $"Are you sure you want to delete {album?.Value?.Name}?", "Delete", "No");
+
+        // if (confirmation)
+        // {
+        //     LoadingScreenService.ShowAndHide();
+        //     await _apiClientService.DeleteBand(albumId);
+        //     _bands = _albums?.Where(a => a.AlbumId != albumId).ToArray();
+        //     UpdateState();
+        // }
+    }
+
+
+    private async void EditAlbum(int bandId)
+    {
+        // var result = await _apiClientService.GetBandDetails(bandId);
+        // var band = result.Value;
+
+        // Navigation.NavigateTo($"albums/addeditalbum/{album.BandId}");
+     }
+
 }

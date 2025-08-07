@@ -123,7 +123,7 @@ namespace Tests
             Assert.That(albums.Count, Is.EqualTo(1));
             Assert.That(albums[0].AlbumId, Is.EqualTo(1));
             Assert.That(albums[0].BandName, Is.EqualTo(""));
-            Assert.That(albums[0].Title, Is.EqualTo(""));
+            Assert.That(albums[0].AlbumTitle, Is.EqualTo(""));
         }
 
         [TearDown]

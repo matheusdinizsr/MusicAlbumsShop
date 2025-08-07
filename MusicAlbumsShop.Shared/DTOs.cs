@@ -33,7 +33,7 @@ namespace MusicAlbumsShop.Shared.DTOs
     public class AlbumWithTitle
     {
         public int AlbumId { get; set; }
-        public string Title { get; set; }
+        public string AlbumTitle { get; set; }
         public string BandName { get; set; }
     }
     public class AlbumDetails
