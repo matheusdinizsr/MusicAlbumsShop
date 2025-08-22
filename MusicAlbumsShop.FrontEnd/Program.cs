@@ -15,8 +15,7 @@ namespace MusicAlbumsShop.FrontEnd
             builder.Services.AddScoped<IAlertService, AlertService>();
             builder.Services.AddScoped<IModalService, ModalService>();
             builder.Services.AddScoped<LoadingScreenService>();
-
-
+         
             var app = builder.Build();
 
 

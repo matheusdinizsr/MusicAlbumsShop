@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MusicAlbumsShop.Models;
+using MusicAlbumsShop.Shared;
 
 namespace MusicAlbumsShop.Storage
 {

@@ -1,5 +1,7 @@
 ﻿@page "/albums"
+@using MusicAlbumsShop.Shared
 @using MusicAlbumsShop.Shared.DTOs
+@using MusicAlbumsShop.Storage
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject NavigationManager Navigation
@@ -10,41 +12,97 @@
     <button class="btn btn-primary" @onclick="NavigateToAddEditAlbum"><i class="bi bi-plus-lg"></i></button>
 </h1>
 
-<DxGrid>
-
-</DxGrid>
-
-
-
-
-<section class="p-2 border shadow">
-
-    
-
-    @foreach (var album in _albums)
-    {
-        <div class="row">
-            <div class="col-auto align-middle">
-                <button class="btn btn-primary btn-sm" @onclick="@(() => EditAlbum(album.AlbumId))"><i class="bi bi-pen"></i></button>
-                <button class="btn btn-primary btn-sm" @onclick="@(() => DeleteAlbum(album.AlbumId))"><i class="bi bi-trash"></i></button> 
+<body>
+    <div class="container">
+        <header class="header border">
+            <span class="header-item"></span>
+            <span class="header-item">ID</span>
+            <span class="header-item">Title</span>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Band
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <input class="dropdown-item" type="search" @bind="_bandSearchFilter" @bind:event="oninput" placeholder="Search..." />
+                    </li>
+                    @foreach (var band in _bandsFromAlbums.Distinct().Where(b => b.Contains(_bandSearchFilter, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        <li class="dropdown-subitem">
+                            @band
+                        </li>
+                    }
+                </ul>
             </div>
-            <div class="col-auto align-content-middle">
-                <span class="align-middle">@album.AlbumId</span>
-            </div>
-            <div class="col-auto align-content-middle">
-                <span class="align-middle">@album.AlbumTitle</span>
-            </div>
-            <div class="col-auto align-content-middle">
-                <span class="align-middle">@album.BandName</span>
-            </div>
-        </div>
+        </header>
+
+        <section class="section p-2 border shadow">
+            @foreach (var album in _albums)
+            {
+                <div class="section-item">
+                    <div class="">
+                        <button class="btn btn-primary btn-sm" @onclick="@(() => EditAlbum(album.AlbumId))"><i class="bi bi-pen"></i></button>
+                        <button class="btn btn-primary btn-sm" @onclick="@(() => DeleteAlbum(album.AlbumId))"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <div class="">
+                        <span class="">@album.AlbumId</span>
+                    </div>
+                    <div class="">
+                        <span class="">@album.AlbumTitle</span>
+                    </div>
+                    <div class="">
+                        <span class="">@album.BandName</span>
+                    </div>
+                </div>
+            }
+        </section>
+    </div>
+</body>
+
+<style>
+    .container {
+        display: grid;
+        grid-template-areas:
+            'header header header header'
+            'section section section section';
+        position: relative;
     }
-</section>
+
+    .header {
+        grid-area: header;
+        display: grid;
+        grid-template-columns: 109px 50px 200px 50px;
+        max-width: 520px;
+    }
+
+    .header-item {
+        align-content: center;
+    }
+
+    .section {
+        margin-top: 10px;
+    }
+
+    .section-item {
+        grid-area: section;
+        display: grid;
+        grid-template-columns: 100px 50px 200px auto;
+        padding: 3px;
+    }
+
+    .dropdown-subitem {
+        background-color: whitesmoke;
+    }
+
+</style>
 
 
 @code {
     private AlbumWithTitle[]? _albums = [];
+    private string[]? _bandsFromAlbums = [];
+    private string _bandSearchFilter = "";
     private ApiClientService _apiClientService = new ApiClientService();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,8 +121,14 @@
         var result = await _apiClientService.GetAlbums();
 
         _albums = result.Value;
+        _bandsFromAlbums = _albums.Select(a => a.BandName).ToArray();
 
         StateHasChanged();
+    }
+
+    private void BandSearchWithAutocomplete(string input)
+    {
+
     }
 
     private async Task DeleteAlbum(int albumId)
@@ -89,6 +153,6 @@
         // var band = result.Value;
 
         // Navigation.NavigateTo($"albums/addeditalbum/{album.BandId}");
-     }
+    }
 
 }
