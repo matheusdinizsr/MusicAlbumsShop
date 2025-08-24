@@ -2,6 +2,8 @@
 @using MusicAlbumsShop.Shared
 @using MusicAlbumsShop.Shared.DTOs
 @using MusicAlbumsShop.Storage
+@using Microsoft.AspNetCore.Components
+@using System.Text.RegularExpressions
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject NavigationManager Navigation
@@ -26,10 +28,13 @@
                     <li>
                         <input class="dropdown-item" type="search" @bind="_bandSearchFilter" @bind:event="oninput" placeholder="Search..." />
                     </li>
-                    @foreach (var band in _bandsFromAlbums.Distinct().Where(b => b.Contains(_bandSearchFilter, StringComparison.CurrentCultureIgnoreCase)))
+                    <li class="dropdown-subitem" @onclick="@(() => GetAlbums("All"))">
+                        <strong>All</strong>
+                    </li>
+                    @foreach (var band in GetFilteredBands())
                     {
-                        <li class="dropdown-subitem">
-                            @band
+                        <li class="dropdown-subitem" @onclick="@(() => GetAlbums(band))">
+                            @((MarkupString)HighlightMatch(band, _bandSearchFilter))
                         </li>
                     }
                 </ul>
@@ -116,19 +121,38 @@
         Navigation.NavigateTo("bands/addeditband");
     }
 
-    private async Task GetAlbums()
+    private async Task GetAlbums(string band = "All")
     {
         var result = await _apiClientService.GetAlbums();
 
         _albums = result.Value;
         _bandsFromAlbums = _albums.Select(a => a.BandName).ToArray();
 
+        if (band != "All")
+        {
+            _albums = _albums.Where(a => a.BandName == band).ToArray();
+        }
+
+        
         StateHasChanged();
     }
 
-    private void BandSearchWithAutocomplete(string input)
+    private IEnumerable<string> GetFilteredBands()
     {
+        return _bandsFromAlbums
+            .Distinct()
+            .Where(b => b.Contains(_bandSearchFilter, StringComparison.CurrentCultureIgnoreCase))
+            .Order();
+    }
 
+    private string HighlightMatch(string text, string filter)
+    {
+        if (string.IsNullOrWhiteSpace(filter))
+        {
+            return text;
+        }
+
+        return Regex.Replace(text, Regex.Escape(filter), m => $"<strong>{m.Value}</strong>", RegexOptions.IgnoreCase);
     }
 
     private async Task DeleteAlbum(int albumId)
